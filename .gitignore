@@ -1,0 +1,23 @@
+# .NET / JetBrains Rider / Visual Studio Section
+# Ignores build outputs, IDE settings, and local configuration.
+.idea/
+.vs/
+bin/
+obj/
+*.suo
+*.user
+*.userosscache
+appsettings.Development.json
+
+# Node.js / Angular / VS Code Section
+# Ignores dependencies, build outputs, and local cache.
+node_modules/
+dist/
+.angular/cache/
+.vscode/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS-specific files
+.DS_Store
