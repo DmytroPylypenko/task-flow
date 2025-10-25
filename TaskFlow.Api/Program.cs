@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using TaskFlow.Api.Data;
+using TaskFlow.Api.Utilities;
 
 namespace TaskFlow.Api;
 
@@ -10,6 +11,7 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
         // Add services to the container.
+        builder.Services.AddScoped<IPasswordHasher, PBKDF2PasswordHasher>();
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
