@@ -4,6 +4,7 @@ using TaskFlow.Api.Data;
 using TaskFlow.Api.DTOs;
 using TaskFlow.Api.Models;
 using TaskFlow.Api.Repository.IRepository;
+using TaskFlow.Api.Services.IServices;
 using TaskFlow.Api.Utilities;
 
 namespace TaskFlow.Api.Controllers;
@@ -17,16 +18,18 @@ public class AuthController : ControllerBase
 {
     private readonly IUserRepository _userRepository;
     private readonly IPasswordHasher _passwordHasher;
-
+    private readonly ITokenService _tokenService;
+    
     /// <summary>
     /// Initializes a new instance of the AuthController.
     /// </summary>
     /// <param name="context">The database context for user operations.</param>
     /// <param name="passwordHasher">The service used for hashing and verifying passwords.</param>
-    public AuthController(IUserRepository userRepository, IPasswordHasher passwordHasher)
+    public AuthController(IUserRepository userRepository, IPasswordHasher passwordHasher, ITokenService tokenService)
     {
         _userRepository = userRepository;
         _passwordHasher = passwordHasher;
+        _tokenService = tokenService;
     }
     
     /// <summary>
@@ -59,5 +62,35 @@ public class AuthController : ControllerBase
 
         // Return a success response
         return StatusCode(201, new { Message = "User registered successfully." });
+    }
+    
+    /// <summary>
+    /// Authenticates a user and returns a JWT.
+    /// </summary>
+    /// <param name="request">The login data (Email, Password).</param>
+    /// <returns>A JWT on success, or 401 Unauthorized on failure.</returns>
+    [HttpPost("login")]
+    public async Task<IActionResult> Login([FromBody] UserLoginDto request)
+    {
+        // 1. Find the user by email
+        var user = await _userRepository.FindUserByEmailAsync(request.Email);
+        if (user is null)
+        {
+            // Return Unauthorized to prevent leaking info about which emails exist
+            return Unauthorized(new { Message = "Invalid credentials." });
+        }
+
+        // 2. Verify the password
+        bool isPasswordValid = _passwordHasher.Verify(user.PasswordHash, request.Password);
+        if (!isPasswordValid)
+        {
+            return Unauthorized(new { Message = "Invalid credentials." });
+        }
+
+        // 3. Create the JWT
+        string token = _tokenService.CreateToken(user);
+
+        // 4. Return the token
+        return Ok(new { Token = token });
     }
 }
