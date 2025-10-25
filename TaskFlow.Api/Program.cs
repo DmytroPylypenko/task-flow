@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using TaskFlow.Api.Data;
+using TaskFlow.Api.Repository;
+using TaskFlow.Api.Repository.IRepository;
 using TaskFlow.Api.Utilities;
 
 namespace TaskFlow.Api;
@@ -12,6 +14,7 @@ public class Program
 
         // Add services to the container.
         builder.Services.AddScoped<IPasswordHasher, PBKDF2PasswordHasher>();
+        builder.Services.AddScoped<IUserRepository, UserRepository>();
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
