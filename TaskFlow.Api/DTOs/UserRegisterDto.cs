@@ -2,6 +2,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace TaskFlow.Api.DTOs;
 
+/// <summary>
+/// Data Transfer Object used for user registration (sign up).
+/// </summary>
 public class UserRegisterDto
 {
     [Required]

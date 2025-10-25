@@ -2,6 +2,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace TaskFlow.Api.DTOs;
 
+/// <summary>
+/// Data Transfer Object used for user login (sign in).
+/// </summary>
 public class UserLoginDto
 {
     [Required]
