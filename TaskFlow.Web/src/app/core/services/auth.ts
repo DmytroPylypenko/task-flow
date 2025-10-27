@@ -1,9 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../environments/environments';
-import { UserLogin, UserRegister } from '../models/user-credentials.model';
-import { AuthToken } from '../models/token.model';
+import { environment } from '../../../environments/environments';
+import { UserLogin, UserRegister } from '../../models/user-credentials.model';
+import { AuthToken } from '../../models/token.model';
 
 /**
  * AuthService class provides methods for user authentication.
