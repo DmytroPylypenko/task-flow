@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth';
+import { Router } from '@angular/router';
 
 /**
  * Handles the user registration page and form interactions.
@@ -14,6 +15,7 @@ import { AuthService } from '../../../core/services/auth';
 export class RegisterComponent {
   private readonly fb = inject(FormBuilder);
   private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
 
   // --- Component state management ---
   isLoading = false;
@@ -39,7 +41,7 @@ export class RegisterComponent {
 
     this.authService.register(this.registerForm.value).subscribe({
       next: () => {
-
+        this.router.navigate(['/login']);
       },
       error: (err) => {
         this.errorMessage = 'Registration failed. The email may already be in use.';
@@ -47,7 +49,7 @@ export class RegisterComponent {
       },
       complete: () => {
         this.isLoading = false;
-      }
+      },
     });
   }
 }

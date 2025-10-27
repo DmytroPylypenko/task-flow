@@ -3,20 +3,25 @@
 
   <div>
     <label for="email">Email</label>
-    <input id="email" type="email" formControlName="email">
-    </div>
+    <input id="email" type="email" formControlName="email" />
+  </div>
 
   <div>
     <label for="password">Password</label>
-    <input id="password" type="password" formControlName="password">
+    <input id="password" type="password" formControlName="password" />
   </div>
 
-  <div @if(errorMessage) class="error-message">
+  @if(errorMessage) {
+  <div class="error-message">
     {{ errorMessage }}
   </div>
+  }
 
   <button type="submit" [disabled]="loginForm.invalid || isLoading">
-    <span @if(!isLoading)>Log In</span>
-    <span @if(isLoading)>Loading...</span>
+    @if(!isLoading) {
+    <span>Log In</span>
+    } @else if(isLoading){
+    <span>Loading...</span>
+    }
   </button>
 </form>

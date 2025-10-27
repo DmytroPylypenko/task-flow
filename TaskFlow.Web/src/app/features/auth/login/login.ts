@@ -40,6 +40,7 @@ export class LoginComponent {
       next: (response) => {
         console.log('Login successful!', response.token);
         localStorage.setItem('authToken', response.token);
+        // this.router.navigate(['/boards']);
       },
       error: (err) => {
         console.error('Login failed', err);
