@@ -24,6 +24,18 @@ public class Program
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+        // Add the CORS service
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("FrontendCorsPolicy", policy =>
+            {
+                // Allow requests from Angular app's origin
+                policy.WithOrigins("http://localhost:4200") 
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+            });
+        });
+        
         // Add and configure JWT Authentication
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
@@ -55,6 +67,8 @@ public class Program
         }
 
         app.UseHttpsRedirection();
+        
+        app.UseCors("FrontendCorsPolicy");
         
         app.UseAuthentication();
         app.UseAuthorization();
