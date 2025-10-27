@@ -1,0 +1,32 @@
+<form [formGroup]="registerForm" (ngSubmit)="onRegister()">
+  <h2>Register</h2>
+
+  <div>
+    <label for="name">Name</label>
+    <input id="name" type="text" formControlName="name" />
+  </div>
+
+  <div>
+    <label for="email">Email</label>
+    <input id="email" type="email" formControlName="email" />
+  </div>
+
+  <div>
+    <label for="password">Password</label>
+    <input id="password" type="password" formControlName="password" />
+  </div>
+
+  @if(errorMessage) {
+  <div class="error-message">
+    {{ errorMessage }}
+  </div>
+  }
+
+  <button type="submit" [disabled]="registerForm.invalid || isLoading">
+    @if(!isLoading) {
+    <span>Register</span>
+    } @else if (isLoading) {
+    <span>Creating Account...</span>
+    }
+  </button>
+</form>
