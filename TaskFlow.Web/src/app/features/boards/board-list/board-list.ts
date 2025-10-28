@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { inject } from '@angular/core';
 import { BoardService } from '../../../core/services/board';
-import { Board } from '../../../models/board.models';
+import { Board } from '../../../models/board.model';
 
 /**
  * Displays a list of the user's boards.
