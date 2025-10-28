@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace TaskFlow.Api.Models;
 
@@ -14,5 +15,7 @@ public class Task
     public string? Description { get; set; }
 
     public int ColumnId { get; set; }
+    
+    [JsonIgnore]
     public Column? Column { get; set; }
 }
