@@ -10,7 +10,9 @@
   } @else {
   <ul>
     @for (board of boards; track board.id) {
-    <li>{{ board.name }}</li>
+    <li>
+      <a [routerLink]="['/boards', board.id]">{{ board.name }}</a>
+    </li>
     } @empty {
     <p>You don't have any boards yet. Create one to get started!</p>
     }

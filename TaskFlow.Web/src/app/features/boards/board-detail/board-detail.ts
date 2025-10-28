@@ -34,6 +34,7 @@ export class BoardDetailComponent {
           this.board = data;
         },
         error: (err) => {
+          this.isLoading = false;
           this.errorMessage = 'Failed to load board details.';
           console.error('Failed to fetch board', err);
         },
