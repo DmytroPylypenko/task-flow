@@ -20,6 +20,7 @@ public class Program
         // Add services to the container.
         builder.Services.AddScoped<IPasswordHasher, PBKDF2PasswordHasher>();
         builder.Services.AddScoped<IUserRepository, UserRepository>();
+        builder.Services.AddScoped<IBoardRepository, BoardRepository>();
         builder.Services.AddScoped<ITokenService, TokenService>();
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
