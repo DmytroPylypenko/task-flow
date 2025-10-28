@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth';
+import { Router } from '@angular/router';
 
 /**
  * Handles the user login page and form interactions.
@@ -14,6 +15,7 @@ import { AuthService } from '../../../core/services/auth';
 export class LoginComponent {
   private readonly fb = inject(FormBuilder);
   private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
 
   isLoading = false;
   errorMessage: string | null = null;
@@ -40,7 +42,7 @@ export class LoginComponent {
       next: (response) => {
         console.log('Login successful!', response.token);
         localStorage.setItem('authToken', response.token);
-        // this.router.navigate(['/boards']);
+        this.router.navigate(['/boards']);
       },
       error: (err) => {
         console.error('Login failed', err);
