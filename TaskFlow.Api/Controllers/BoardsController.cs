@@ -44,4 +44,32 @@ public class BoardsController : ControllerBase
         
         return Ok(boards);
     }
+    
+    /// <summary>
+    /// Gets a single board by its ID, including its columns and tasks.
+    /// </summary>
+    /// <param name="id">The ID of the board to retrieve.</param>
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetBoard(int id)
+    {
+        // 1. Get user ID from claims
+        string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        
+        // 2. Safely parse user ID
+        if (!int.TryParse(userId, out var parsedUserId))
+        {
+            return Unauthorized();
+        }
+        
+        // 3. Get a board from repository
+        var board = await _boardRepository.GetBoardByIdAsync(id, parsedUserId);
+
+        // 4. Handle not found or unauthorized access.
+        if (board == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(board);
+    }
 }

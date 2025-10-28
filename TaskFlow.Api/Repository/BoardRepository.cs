@@ -24,4 +24,13 @@ public class BoardRepository :  IBoardRepository
             .Where(b => b.UserId == userId)
             .ToListAsync();
     }
+    
+    /// <inheritdoc />
+    public async Task<Board?> GetBoardByIdAsync(int boardId, int userId)
+    {
+        return await _context.Boards
+            .Include(b => b.Columns)
+            .ThenInclude(c => c.Tasks)
+            .FirstOrDefaultAsync(b => b.Id == boardId && b.UserId == userId);
+    }
 }
