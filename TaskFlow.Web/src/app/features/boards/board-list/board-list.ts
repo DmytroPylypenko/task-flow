@@ -1,14 +1,15 @@
 import { Component } from '@angular/core';
 import { inject } from '@angular/core';
 import { BoardService } from '../../../core/services/board';
-import { Board } from '../../../models/board.models';
+import { Board } from '../../../models/board.model';
+import { RouterLink } from '@angular/router';
 
 /**
  * Displays a list of the user's boards.
  */
 @Component({
   selector: 'app-board-list',
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './board-list.html',
   styleUrl: './board-list.scss',
 })
