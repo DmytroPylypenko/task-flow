@@ -1,0 +1,19 @@
+<div class="board-list-container">
+  <h2>My Boards</h2>
+
+  @if (isLoading) {
+  <p>Loading boards...</p>
+  } @else if (errorMessage) {
+  <div class="error-message">
+    <p>{{ errorMessage }}</p>
+  </div>
+  } @else {
+  <ul>
+    @for (board of boards; track board.id) {
+    <li>{{ board.name }}</li>
+    } @empty {
+    <p>You don't have any boards yet. Create one to get started!</p>
+    }
+  </ul>
+  }
+</div>

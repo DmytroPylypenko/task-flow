@@ -9,11 +9,11 @@ using TaskFlow.Api.Utilities;
 
 namespace TaskFlow.Api.Controllers;
 
-[Route("api/[controller]")]
-[ApiController]
 /// <summary>
 /// Handles user registration and authentication via JWT.
 /// </summary>
+[Route("api/[controller]")]
+[ApiController]
 public class AuthController : ControllerBase
 {
     private readonly IUserRepository _userRepository;
