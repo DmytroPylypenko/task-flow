@@ -19,4 +19,12 @@ public interface IBoardRepository
     /// <param name="userId">The ID of the user who must own the board.</param>
     /// <returns>The Board object if found and ownership is verified; otherwise, null.</returns>
     Task<Board?> GetBoardByIdAsync(int boardId, int userId);
+    
+    /// <summary>
+    /// Adds a new board to the database for the specified user.
+    /// Automatically creates the default columns (To Do, In Progress, Done).
+    /// </summary>
+    /// <param name="board">The Board object to create.</param>
+    /// <returns>The newly created Board object, including its generated ID.</returns>
+    Task<Board> CreateBoardAsync(Board board);
 }

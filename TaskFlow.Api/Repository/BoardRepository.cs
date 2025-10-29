@@ -22,6 +22,7 @@ public class BoardRepository :  IBoardRepository
     {
         return await _context.Boards
             .Where(b => b.UserId == userId)
+            .OrderByDescending(b  => b.Id)
             .ToListAsync();
     }
     
@@ -32,5 +33,17 @@ public class BoardRepository :  IBoardRepository
             .Include(b => b.Columns)
             .ThenInclude(c => c.Tasks)
             .FirstOrDefaultAsync(b => b.Id == boardId && b.UserId == userId);
+    }
+    
+    /// <inheritdoc />
+    public async Task<Board> CreateBoardAsync(Board board)
+    {
+        board.Columns.Add(new Column { Name = "To Do" });
+        board.Columns.Add(new Column { Name = "In Progress" });
+        board.Columns.Add(new Column { Name = "Done" });
+
+        _context.Boards.Add(board);
+        await _context.SaveChangesAsync();
+        return board;
     }
 }

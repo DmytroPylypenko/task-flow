@@ -29,4 +29,12 @@ export class BoardService {
   getBoardById(id: number): Observable<Board> {
     return this.http.get<Board>(`${this.apiUrl}/${id}`);
   }
+
+  /**
+   * Creates a new board for the authenticated user.
+   * @param boardName The name of the new board.
+   */
+  createBoard(boardName: string): Observable<Board> {
+    return this.http.post<Board>(this.apiUrl, { name: boardName });
+  }
 }
