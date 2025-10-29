@@ -1,6 +1,11 @@
 <div class="board-list-container">
   <h2>My Boards</h2>
 
+  <form [formGroup]="newBoardForm" (ngSubmit)="onCreateBoard()">
+    <input type="text" formControlName="name" placeholder="New board name...">
+    <button type="submit" [disabled]="newBoardForm.invalid">Create Board</button>
+  </form>
+  
   @if (isLoading) {
   <p>Loading boards...</p>
   } @else if (errorMessage) {
