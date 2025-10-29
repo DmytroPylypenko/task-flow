@@ -33,4 +33,16 @@ public class BoardRepository :  IBoardRepository
             .ThenInclude(c => c.Tasks)
             .FirstOrDefaultAsync(b => b.Id == boardId && b.UserId == userId);
     }
+    
+    /// <inheritdoc />
+    public async Task<Board> CreateBoardAsync(Board board)
+    {
+        board.Columns.Add(new Column { Name = "To Do" });
+        board.Columns.Add(new Column { Name = "In Progress" });
+        board.Columns.Add(new Column { Name = "Done" });
+
+        _context.Boards.Add(board);
+        await _context.SaveChangesAsync();
+        return board;
+    }
 }

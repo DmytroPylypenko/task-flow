@@ -1,6 +1,8 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TaskFlow.Api.DTOs;
+using TaskFlow.Api.Models;
 using TaskFlow.Api.Repository.IRepository;
 
 namespace TaskFlow.Api.Controllers;
@@ -71,5 +73,36 @@ public class BoardsController : ControllerBase
         }
 
         return Ok(board);
+    }
+    
+    /// <summary>
+    /// Creates a new board for the authenticated user.
+    /// </summary>
+    /// <param name="boardDto">The data for the new board.</param>
+    /// <returns>The newly created board.</returns>
+    [HttpPost]
+    public async Task<IActionResult> CreateBoard([FromBody] BoardCreateDto boardDto)
+    {
+        // 1. Get user ID from claims
+        string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        
+        // 2. Safely parse user ID
+        if (!int.TryParse(userId, out var parsedUserId))
+        {
+            return Unauthorized();
+        }
+
+        // 3. Create the Board model from the DTO.
+        var board = new Board
+        {
+            Name = boardDto.Name,
+            UserId = parsedUserId
+        };
+
+        // 4. Use the repository to create the board.
+        var createdBoard = await _boardRepository.CreateBoardAsync(board);
+
+        // 5. Return a 201 Created response with a Location header.
+        return CreatedAtAction(nameof(GetBoard), new { id = createdBoard.Id }, createdBoard);
     }
 }
