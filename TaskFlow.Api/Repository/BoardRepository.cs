@@ -22,6 +22,7 @@ public class BoardRepository :  IBoardRepository
     {
         return await _context.Boards
             .Where(b => b.UserId == userId)
+            .OrderByDescending(b  => b.Id)
             .ToListAsync();
     }
     
