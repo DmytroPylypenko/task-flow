@@ -1,26 +1,33 @@
 <div class="board-detail-container">
   @if (isLoading) {
-    <p>Loading board...</p>
+  <p>Loading board...</p>
   } @else if (errorMessage) {
-    <div class="error-message">
-      <p>{{ errorMessage }}</p>
-    </div>
+  <div class="error-message">
+    <p>{{ errorMessage }}</p>
+  </div>
   } @else if (board) {
-    <h1>{{ board.name }}</h1>
+  <h1>{{ board.name }}</h1>
 
-    <div class="columns-container">
-      @for (column of board.columns; track column.id) {
-        <div class="column">
-          <h3>{{ column.name }}</h3>
-          <ul>
-            @for (task of column.tasks; track task.id) {
-              <li class="task-card">{{ task.title }}</li>
-            } @empty {
-              <p class="no-tasks">No tasks in this column.</p>
-            }
-          </ul>
-        </div>
-      }
+  <div class="columns-container" cdkDropListGroup>
+    @for (column of board.columns; track column.id) {
+    <div class="column">
+      <h3>{{ column.name }}</h3>
+
+      <ul
+        cdkDropList
+        [id]="column.id.toString()"
+        [cdkDropListData]="column.tasks"
+        (cdkDropListDropped)="drop($event)"
+      >
+
+        @for (task of column.tasks; track task.id) {
+        <li class="task-card" cdkDrag>{{ task.title }}</li>
+        } @empty {
+        <p class="no-tasks">No tasks in this column.</p>
+        }
+      </ul>
     </div>
+    }
+  </div>
   }
 </div>
