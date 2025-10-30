@@ -31,7 +31,7 @@ public class BoardRepository :  IBoardRepository
     {
         return await _context.Boards
             .Include(b => b.Columns)
-            .ThenInclude(c => c.Tasks)
+            .ThenInclude(c => c.Tasks.OrderBy(t => t.Position))
             .FirstOrDefaultAsync(b => b.Id == boardId && b.UserId == userId);
     }
     
