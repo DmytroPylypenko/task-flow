@@ -1,3 +1,5 @@
+using TaskFlow.Api.DTOs;
+
 namespace TaskFlow.Api.Repository.IRepository;
 
 /// <summary>
@@ -17,4 +19,20 @@ public interface ITaskRepository
     /// Returns <c>false</c> when the task does not exist or the user is unauthorized.
     /// </returns>
     Task<bool> UpdateTaskColumnAsync(int taskId, int newColumnId, int userId);
+    
+    /// <summary>
+    /// Updates the positions of tasks within a specified column, ensuring that all
+    /// affected tasks belong to the authenticated user. This method is typically used
+    /// when tasks are reordered via drag-and-drop in the UI.
+    /// </summary>
+    /// <param name="columnId">The ID of the column containing the tasks to reorder.</param>
+    /// <param name="tasksToReorder">
+    /// A collection of task DTOs containing the task IDs and their new positions.
+    /// </param>
+    /// <param name="userId">The ID of the authenticated user performing the operation.</param>
+    /// <returns>
+    /// <c>true</c> if all tasks were successfully updated; otherwise, <c>false</c>
+    /// (e.g., if any task does not belong to the specified column or user).
+    /// </returns>
+    Task<bool> UpdateTaskPositionsAsync(int columnId, IEnumerable<TaskReorderDto> tasksToReorder, int userId);
 }
