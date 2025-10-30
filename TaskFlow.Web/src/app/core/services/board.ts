@@ -3,6 +3,7 @@ import { environment } from '../../../environments/environments';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Board } from '../../models/board.model';
+import { TaskReorder } from '../../models/task-reorder.model';
 
 /**
  * BoardService handles board-related operations.
@@ -13,6 +14,7 @@ import { Board } from '../../models/board.model';
 export class BoardService {
   private readonly apiUrl = `${environment.apiUrl}/boards`;
   private readonly tasksApiUrl = `${environment.apiUrl}/tasks`;
+  private readonly columnsApiUrl = `${environment.apiUrl}/columns`;
   private readonly http = inject(HttpClient);
 
   /**
@@ -47,5 +49,15 @@ export class BoardService {
   moveTask(taskId: number, newColumnId: number): Observable<void> {
     const moveUrl = `${this.tasksApiUrl}/${taskId}/move`;
     return this.http.patch<void>(moveUrl, { newColumnId });
+  }
+
+  /**
+   * Updates the position of tasks within a single column.
+   * @param columnId The ID of the column being reordered.
+   * @param payload The array of tasks with their new positions.
+   */
+  reorderTasks(columnId: number, payload: TaskReorder[]): Observable<void> {
+    const reorderUrl = `${this.columnsApiUrl}/${columnId}/reorder`;
+    return this.http.patch<void>(reorderUrl, payload);
   }
 }
