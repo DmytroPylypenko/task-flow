@@ -12,6 +12,7 @@ import { Board } from '../../models/board.model';
 })
 export class BoardService {
   private readonly apiUrl = `${environment.apiUrl}/boards`;
+  private readonly tasksApiUrl = `${environment.apiUrl}/tasks`;
   private readonly http = inject(HttpClient);
 
   /**
@@ -36,5 +37,15 @@ export class BoardService {
    */
   createBoard(boardName: string): Observable<Board> {
     return this.http.post<Board>(this.apiUrl, { name: boardName });
+  }
+
+  /**
+   * Moves a task to a different column.
+   * @param taskId The ID of the task to move.
+   * @param newColumnId The ID of the destination column.
+   */
+  moveTask(taskId: number, newColumnId: number): Observable<void> {
+    const moveUrl = `${this.tasksApiUrl}/${taskId}/move`;
+    return this.http.patch<void>(moveUrl, { newColumnId });
   }
 }
