@@ -3,7 +3,7 @@ import { environment } from '../../../environments/environments';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Board } from '../../models/board.model';
-import { TaskReorder } from '../../models/task-reorder';
+import { TaskReorder } from '../../models/task-reorder.model';
 
 /**
  * BoardService handles board-related operations.
