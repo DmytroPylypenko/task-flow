@@ -14,6 +14,8 @@ public class Task
     [MaxLength(500)]
     public string? Description { get; set; }
 
+    public int Position { get; set; }
+    
     public int ColumnId { get; set; }
     
     [JsonIgnore]
