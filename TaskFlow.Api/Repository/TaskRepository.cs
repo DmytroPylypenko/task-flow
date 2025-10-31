@@ -66,4 +66,33 @@ public class TaskRepository : ITaskRepository
         await _context.SaveChangesAsync();
         return true;
     }
+    
+    /// <inheritdoc />
+    public async Task<Task?> CreateTaskAsync(Task task, int userId)
+    {
+        // 1. Security Check: Verify the user owns the board the column belongs to.
+        var column = await _context.Columns
+            .Include(c => c.Board)
+            .FirstOrDefaultAsync(c => c.Id == task.ColumnId && c.Board.UserId == userId);
+
+        // If the user does not own the column, deny the operation.
+        if (column == null)
+        {
+            return null;
+        }
+
+        // 2. Determine the new task's position (it should appear last).
+        var maxPosition = await _context.Tasks
+            .Where(t => t.ColumnId == task.ColumnId)
+            .DefaultIfEmpty()
+            .MaxAsync(t => (int?)t.Position);
+            
+        // If no tasks exist, start from 0; otherwise, increment by 1.
+        task.Position = (maxPosition ?? -1) + 1;
+
+        // 3. Add and save the new task.
+        _context.Tasks.Add(task);
+        await _context.SaveChangesAsync();
+        return task;
+    }
 }

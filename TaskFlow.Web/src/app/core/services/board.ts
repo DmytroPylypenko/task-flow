@@ -4,6 +4,8 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Board } from '../../models/board.model';
 import { TaskReorder } from '../../models/task-reorder.model';
+import { TaskCreate } from '../../models/task-create.model';
+import { Task } from '../../models/task.model';
 
 /**
  * BoardService handles board-related operations.
@@ -59,5 +61,13 @@ export class BoardService {
   reorderTasks(columnId: number, payload: TaskReorder[]): Observable<void> {
     const reorderUrl = `${this.columnsApiUrl}/${columnId}/reorder`;
     return this.http.patch<void>(reorderUrl, payload);
+  }
+
+  /**
+   * Creates a new task in a specific column.
+   * @param payload The data for the new task.
+   */
+  createTask(payload: TaskCreate): Observable<Task> {
+    return this.http.post<Task>(this.tasksApiUrl, payload);
   }
 }

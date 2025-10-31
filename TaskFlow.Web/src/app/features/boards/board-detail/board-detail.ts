@@ -10,24 +10,31 @@ import {
 } from '@angular/cdk/drag-drop';
 import { Task } from '../../../models/task.model';
 import { TaskReorder } from '../../../models/task-reorder.model';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Column } from '../../../models/column.model';
+import { TaskCreate } from '../../../models/task-create.model';
 
 /**
  * Displays the details of a single board.
  */
 @Component({
   selector: 'app-board-detail',
-  imports: [DragDropModule],
+  imports: [DragDropModule, ReactiveFormsModule],
   templateUrl: './board-detail.html',
   styleUrl: './board-detail.scss',
 })
 export class BoardDetailComponent {
   private readonly boardService = inject(BoardService);
   private readonly route = inject(ActivatedRoute);
+  private readonly fb = inject(FormBuilder);
 
   // --- Component state management ---
   board: Board | null = null;
   isLoading = true;
   errorMessage: string | null = null;
+
+  // A Map to store a FormGroup for each column, keyed by its column ID.
+  newTaskForms = new Map<number, FormGroup>();
 
   /**
    * Initializes the component and fetches the board details based on the provided ID in the URL.
@@ -40,6 +47,16 @@ export class BoardDetailComponent {
       this.boardService.getBoardById(+boardId).subscribe({
         next: (data) => {
           this.board = data;
+
+          // After loading the board, create a form for each column.
+          this.board.columns.forEach((column) => {
+            this.newTaskForms.set(
+              column.id,
+              this.fb.group({
+                title: ['', [Validators.required, Validators.maxLength(100)]],
+              })
+            );
+          });
         },
         error: (err) => {
           this.isLoading = false;
@@ -111,5 +128,34 @@ export class BoardDetailComponent {
         },
       });
     }
+  }
+
+  /**
+   * Handles creating a new task in a specific column.
+   * @param column The column where the new task will be added.
+   */
+  onCreateTask(column: Column): void {
+    // Retrieve the FormGroup for the given column.
+    const form = this.newTaskForms.get(column.id);
+    if (!form || form.invalid) {
+      return;
+    }
+
+    // Prepare the payload for the backend API.
+    const taskPayload : TaskCreate = {
+      title: form.value.title.trim(),
+      description: form.value.description,
+      columnId: column.id,
+    };
+
+    this.boardService.createTask(taskPayload).subscribe({
+      next: (newTask) => {
+        column.tasks.push(newTask);
+        form.reset();
+      },
+      error: (err) => {
+        console.error('Failed to create task', err);
+      },
+    });
   }
 }

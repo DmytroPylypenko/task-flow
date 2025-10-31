@@ -1,4 +1,5 @@
 using TaskFlow.Api.DTOs;
+using Task = TaskFlow.Api.Models.Task;
 
 namespace TaskFlow.Api.Repository.IRepository;
 
@@ -35,4 +36,18 @@ public interface ITaskRepository
     /// (e.g., if any task does not belong to the specified column or user).
     /// </returns>
     Task<bool> UpdateTaskPositionsAsync(int columnId, IEnumerable<TaskReorderDto> tasksToReorder, int userId);
+    
+    /// <inheritdoc />
+    /// <summary>
+    /// Creates a new task in the specified column for the authenticated user.
+    /// Ensures that the user owns the column's parent board before inserting
+    /// and automatically assigns the correct task position within that column.
+    /// </summary>
+    /// <param name="task">The task entity to create.</param>
+    /// <param name="userId">The ID of the authenticated user creating the task.</param>
+    /// <returns>
+    /// The newly created <see cref="Task"/> entity, or <c>null</c> if the user
+    /// does not have permission to add a task to the specified column.
+    /// </returns>
+    Task<Task?> CreateTaskAsync(Task task, int userId);
 }
