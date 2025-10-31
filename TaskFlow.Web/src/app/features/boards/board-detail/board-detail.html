@@ -13,6 +13,11 @@
     <div class="column">
       <h3>{{ column.name }}</h3>
 
+      <form [formGroup]="newTaskForms.get(column.id)!" (ngSubmit)="onCreateTask(column)">
+        <input type="text" formControlName="title" placeholder="New task...">
+        <button type="submit" [disabled]="newTaskForms.get(column.id)?.invalid">[+]</button>
+      </form>
+
       <ul
         cdkDropList
         [id]="column.id.toString()"
