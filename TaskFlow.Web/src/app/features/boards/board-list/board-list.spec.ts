@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { BoardList } from './board-list';
+import { BoardListComponent as BoardList } from './board-list';
 
 describe('BoardList', () => {
   let component: BoardList;
