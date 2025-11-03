@@ -16,6 +16,7 @@ import { TaskCreate } from '../../../models/task-create.model';
 import { Dialog } from '@angular/cdk/dialog';
 import { TaskDetailModalComponent } from '../../tasks/task-detail-modal/task-detail-modal';
 import { TaskUpdate } from '../../../models/task-update.model';
+import { TaskDialogResult } from '../../../models/task-dialog-result.model';
 
 /**
  * Displays the details of a single board.
@@ -168,25 +169,53 @@ export class BoardDetailComponent {
    * @param task The task to be edited.
    */
   openTaskModal(task: Task): void {
-    const dialogRef = this.dialog.open<TaskUpdate>(TaskDetailModalComponent, {
+    const dialogRef = this.dialog.open<TaskDialogResult>(TaskDetailModalComponent, {
       width: '500px',
       data: task, // Pass the task data to the modal
     });
 
     // Subscribe to the modal's close event
-    dialogRef.closed.subscribe((updatedTaskData: TaskUpdate | undefined) => {
-      if (updatedTaskData) {
-        this.boardService.updateTask(task.id, updatedTaskData).subscribe({
-          next: (updatedTaskFromServer) => {
-            // Update the task in the local UI for an instant refresh
-            task.title = updatedTaskFromServer.title;
-            task.description = updatedTaskFromServer.description;
-          },
-          error: (err) => {
-            console.error('Failed to update task', err);
-          },
-        });
+    dialogRef.closed.subscribe((result) => {
+      // Check if a result was returned (i.e., not canceled)
+      if (!result) {
+        return;
+      }
+
+      switch (result.action) {
+        case 'update':
+          this.boardService.updateTask(task.id, result.payload).subscribe({
+            next: (updatedTaskFromServer) => {
+              task.title = updatedTaskFromServer.title;
+              task.description = updatedTaskFromServer.description;
+            },
+            error: (err) => console.error('Failed to update task', err),
+          });
+          break;
+
+        case 'delete':
+          this.boardService.deleteTask(task.id).subscribe({
+            next: () => {
+              this.removeTaskFromUI(task);
+            },
+            error: (err) => console.error('Failed to delete task', err),
+          });
+          break;
       }
     });
+  }
+
+  /**
+   * Helper method to remove a task from the local board object.
+   */
+  private removeTaskFromUI(taskToRemove: Task): void {
+    if (!this.board) return;
+
+    for (const column of this.board.columns) {
+      const index = column.tasks.findIndex((task) => task.id === taskToRemove.id);
+      if (index !== -1) {
+        column.tasks.splice(index, 1);
+        return;
+      }
+    }
   }
 }

@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { DialogRef, DIALOG_DATA } from '@angular/cdk/dialog';
 import { Task } from '../../../models/task.model';
 import { TaskUpdate } from '../../../models/task-update.model';
-
+import { TaskDialogResult } from '../../../models/task-dialog-result.model';
 /**
  * Modal component for editing task details.
  * Receives a Task via DIALOG_DATA and returns a TaskUpdate on save.
@@ -18,7 +18,7 @@ export class TaskDetailModalComponent {
   private readonly fb = inject(FormBuilder);
 
   // DialogRef is used to close the modal and return the TaskUpdate payload.
-  private readonly dialogRef = inject(DialogRef<TaskUpdate>);
+  private readonly dialogRef = inject(DialogRef<TaskDialogResult>);
   private readonly task: Task = inject(DIALOG_DATA);
 
   /**
@@ -40,7 +40,15 @@ export class TaskDetailModalComponent {
       return;
     }
 
-    this.dialogRef.close(this.editTaskForm.value as TaskUpdate);
+    const payload: TaskUpdate = this.editTaskForm.value as TaskUpdate;
+    this.dialogRef.close({ action: 'update', payload });
+  }
+
+  /**
+   * Closes the dialog with the 'delete' action.
+   */
+  delete(): void {
+    this.dialogRef.close({ action: 'delete' });
   }
 
   /**

@@ -13,8 +13,12 @@
     </div>
 
     <div class="modal-actions">
-      <button type="button" (click)="cancel()">Cancel</button>
-      <button type="submit" [disabled]="editTaskForm.invalid">Save</button>
+      <button type="button" class="delete-button" (click)="delete()">Delete Task</button>
+
+      <div class="right-actions">
+        <button type="button" (click)="cancel()">Cancel</button>
+        <button type="submit" [disabled]="editTaskForm.invalid">Save</button>
+      </div>
     </div>
   </form>
 </div>
