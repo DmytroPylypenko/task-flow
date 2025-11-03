@@ -37,7 +37,6 @@ public interface ITaskRepository
     /// </returns>
     Task<bool> UpdateTaskPositionsAsync(int columnId, IEnumerable<TaskReorderDto> tasksToReorder, int userId);
     
-    /// <inheritdoc />
     /// <summary>
     /// Creates a new task in the specified column for the authenticated user.
     /// Ensures that the user owns the column's parent board before inserting
@@ -50,4 +49,30 @@ public interface ITaskRepository
     /// does not have permission to add a task to the specified column.
     /// </returns>
     Task<Task?> CreateTaskAsync(Task task, int userId);
+    
+    /// <summary>
+    /// Updates an existing task for the authenticated user.
+    /// Verifies that the user owns the board to which the task belongs
+    /// before applying any changes.
+    /// </summary>
+    /// <param name="taskId">The unique identifier of the task to update.</param>
+    /// <param name="taskDto">The data transfer object containing updated task fields.</param>
+    /// <param name="userId">The ID of the authenticated user performing the update.</param>
+    /// <returns>
+    /// The updated <see cref="Task"/> entity if the operation is authorized and successful; 
+    /// otherwise, <c>null</c> if the task does not exist or does not belong to the user.
+    /// </returns>
+    Task<Task?> UpdateTaskAsync(int taskId, TaskUpdateDto taskDto, int userId);
+    
+    /// <summary>
+    /// Deletes a task from the database if it belongs to the authenticated user.
+    /// Ensures the user owns the board associated with the task before deletion.
+    /// </summary>
+    /// <param name="taskId">The unique identifier of the task to delete.</param>
+    /// <param name="userId">The ID of the authenticated user requesting the deletion.</param>
+    /// <returns>
+    /// <c>true</c> if the task was successfully deleted; 
+    /// otherwise, <c>false</c> if the task was not found or the user is not authorized.
+    /// </returns>
+    Task<bool> DeleteTaskAsync(int taskId, int userId);
 }

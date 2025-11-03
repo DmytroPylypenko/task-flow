@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { BoardListComponent as BoardList } from './board-list';
+import { TaskDetailModal } from './task-detail-modal';
 
-describe('BoardList', () => {
-  let component: BoardList;
-  let fixture: ComponentFixture<BoardList>;
+describe('TaskDetailModal', () => {
+  let component: TaskDetailModal;
+  let fixture: ComponentFixture<TaskDetailModal>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [BoardList]
+      imports: [TaskDetailModal]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(BoardList);
+    fixture = TestBed.createComponent(TaskDetailModal);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

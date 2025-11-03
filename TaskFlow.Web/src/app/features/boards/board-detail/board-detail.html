@@ -14,7 +14,7 @@
       <h3>{{ column.name }}</h3>
 
       <form [formGroup]="newTaskForms.get(column.id)!" (ngSubmit)="onCreateTask(column)">
-        <input type="text" formControlName="title" placeholder="New task...">
+        <input type="text" formControlName="title" placeholder="New task..." />
         <button type="submit" [disabled]="newTaskForms.get(column.id)?.invalid">[+]</button>
       </form>
 
@@ -24,9 +24,8 @@
         [cdkDropListData]="column.tasks"
         (cdkDropListDropped)="drop($event)"
       >
-
         @for (task of column.tasks; track task.id) {
-        <li class="task-card" cdkDrag>{{ task.title }}</li>
+        <li class="task-card" cdkDrag (click)="openTaskModal(task)">{{ task.title }}</li>
         } @empty {
         <p class="no-tasks">No tasks in this column.</p>
         }

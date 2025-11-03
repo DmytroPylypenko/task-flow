@@ -6,6 +6,7 @@ import { Board } from '../../models/board.model';
 import { TaskReorder } from '../../models/task-reorder.model';
 import { TaskCreate } from '../../models/task-create.model';
 import { Task } from '../../models/task.model';
+import { TaskUpdate } from '../../models/task-update.model';
 
 /**
  * BoardService handles board-related operations.
@@ -69,5 +70,22 @@ export class BoardService {
    */
   createTask(payload: TaskCreate): Observable<Task> {
     return this.http.post<Task>(this.tasksApiUrl, payload);
+  }
+
+  /**
+   * Updates an existing task's title and description.
+   * @param taskId The ID of the task to update.
+   * @param payload The new title and description.
+   */
+  updateTask(taskId: number, payload: TaskUpdate): Observable<Task> {
+    return this.http.put<Task>(`${this.tasksApiUrl}/${taskId}`, payload);
+  }
+
+  /**
+   * Deletes a task from the database.
+   * @param taskId The ID of the task to delete.
+   */
+  deleteTask(taskId: number): Observable<void> {
+    return this.http.delete<void>(`${this.tasksApiUrl}/${taskId}`);
   }
 }

@@ -95,4 +95,48 @@ public class TaskRepository : ITaskRepository
         await _context.SaveChangesAsync();
         return task;
     }
+    
+    /// <inheritdoc />
+    public async Task<Task?> UpdateTaskAsync(int taskId, TaskUpdateDto taskDto, int userId)
+    {
+        // 1. Find the task and verify the user owns the board it belongs to.
+        var task = await _context.Tasks
+            .Include(t => t.Column)
+            .ThenInclude(c => c.Board)
+            .FirstOrDefaultAsync(t => t.Id == taskId && t.Column.Board.UserId == userId);
+        
+        // If the task is not found or the user does not own the board, return null
+        if (task == null)
+        {
+            return null;
+        }
+
+        // 2. Apply updates from the DTO to the entity.
+        task.Title = taskDto.Title;
+        task.Description = taskDto.Description;
+        
+        await _context.SaveChangesAsync();
+        return task;
+    }
+
+    /// <inheritdoc />
+    public async Task<bool> DeleteTaskAsync(int taskId, int userId)
+    {
+        // 1. Find the task and verify the user owns the board it belongs to.
+        var task = await _context.Tasks
+            .Include(t => t.Column)
+            .ThenInclude(c => c.Board)
+            .FirstOrDefaultAsync(t => t.Id == taskId && t.Column.Board.UserId == userId);
+
+        // If the task is not found or the user does not own the board, return null
+        if (task == null)
+        {
+            return false;
+        }
+
+        // 2. Remove the task and save changes.
+        _context.Tasks.Remove(task);
+        await _context.SaveChangesAsync();
+        return true;
+    }
 }

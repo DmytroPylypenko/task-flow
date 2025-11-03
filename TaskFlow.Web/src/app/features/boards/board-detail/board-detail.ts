@@ -13,6 +13,10 @@ import { TaskReorder } from '../../../models/task-reorder.model';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Column } from '../../../models/column.model';
 import { TaskCreate } from '../../../models/task-create.model';
+import { Dialog } from '@angular/cdk/dialog';
+import { TaskDetailModalComponent } from '../../tasks/task-detail-modal/task-detail-modal';
+import { TaskUpdate } from '../../../models/task-update.model';
+import { TaskDialogResult } from '../../../models/task-dialog-result.model';
 
 /**
  * Displays the details of a single board.
@@ -27,6 +31,7 @@ export class BoardDetailComponent {
   private readonly boardService = inject(BoardService);
   private readonly route = inject(ActivatedRoute);
   private readonly fb = inject(FormBuilder);
+  private readonly dialog = inject(Dialog);
 
   // --- Component state management ---
   board: Board | null = null;
@@ -142,7 +147,7 @@ export class BoardDetailComponent {
     }
 
     // Prepare the payload for the backend API.
-    const taskPayload : TaskCreate = {
+    const taskPayload: TaskCreate = {
       title: form.value.title.trim(),
       description: form.value.description,
       columnId: column.id,
@@ -157,5 +162,60 @@ export class BoardDetailComponent {
         console.error('Failed to create task', err);
       },
     });
+  }
+
+  /**
+   * Opens the TaskDetailModalComponent for editing a task.
+   * @param task The task to be edited.
+   */
+  openTaskModal(task: Task): void {
+    const dialogRef = this.dialog.open<TaskDialogResult>(TaskDetailModalComponent, {
+      width: '500px',
+      data: task, // Pass the task data to the modal
+    });
+
+    // Subscribe to the modal's close event
+    dialogRef.closed.subscribe((result) => {
+      // Check if a result was returned (i.e., not canceled)
+      if (!result) {
+        return;
+      }
+
+      switch (result.action) {
+        case 'update':
+          this.boardService.updateTask(task.id, result.payload).subscribe({
+            next: (updatedTaskFromServer) => {
+              task.title = updatedTaskFromServer.title;
+              task.description = updatedTaskFromServer.description;
+            },
+            error: (err) => console.error('Failed to update task', err),
+          });
+          break;
+
+        case 'delete':
+          this.boardService.deleteTask(task.id).subscribe({
+            next: () => {
+              this.removeTaskFromUI(task);
+            },
+            error: (err) => console.error('Failed to delete task', err),
+          });
+          break;
+      }
+    });
+  }
+
+  /**
+   * Helper method to remove a task from the local board object.
+   */
+  private removeTaskFromUI(taskToRemove: Task): void {
+    if (!this.board) return;
+
+    for (const column of this.board.columns) {
+      const index = column.tasks.findIndex((task) => task.id === taskToRemove.id);
+      if (index !== -1) {
+        column.tasks.splice(index, 1);
+        return;
+      }
+    }
   }
 }
