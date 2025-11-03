@@ -13,6 +13,9 @@ import { TaskReorder } from '../../../models/task-reorder.model';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Column } from '../../../models/column.model';
 import { TaskCreate } from '../../../models/task-create.model';
+import { Dialog } from '@angular/cdk/dialog';
+import { TaskDetailModalComponent } from '../../tasks/task-detail-modal/task-detail-modal';
+import { TaskUpdate } from '../../../models/task-update.model';
 
 /**
  * Displays the details of a single board.
@@ -27,6 +30,7 @@ export class BoardDetailComponent {
   private readonly boardService = inject(BoardService);
   private readonly route = inject(ActivatedRoute);
   private readonly fb = inject(FormBuilder);
+  private readonly dialog = inject(Dialog);
 
   // --- Component state management ---
   board: Board | null = null;
@@ -142,7 +146,7 @@ export class BoardDetailComponent {
     }
 
     // Prepare the payload for the backend API.
-    const taskPayload : TaskCreate = {
+    const taskPayload: TaskCreate = {
       title: form.value.title.trim(),
       description: form.value.description,
       columnId: column.id,
@@ -156,6 +160,33 @@ export class BoardDetailComponent {
       error: (err) => {
         console.error('Failed to create task', err);
       },
+    });
+  }
+
+  /**
+   * Opens the TaskDetailModalComponent for editing a task.
+   * @param task The task to be edited.
+   */
+  openTaskModal(task: Task): void {
+    const dialogRef = this.dialog.open<TaskUpdate>(TaskDetailModalComponent, {
+      width: '500px',
+      data: task, // Pass the task data to the modal
+    });
+
+    // Subscribe to the modal's close event
+    dialogRef.closed.subscribe((updatedTaskData: TaskUpdate | undefined) => {
+      if (updatedTaskData) {
+        this.boardService.updateTask(task.id, updatedTaskData).subscribe({
+          next: (updatedTaskFromServer) => {
+            // Update the task in the local UI for an instant refresh
+            task.title = updatedTaskFromServer.title;
+            task.description = updatedTaskFromServer.description;
+          },
+          error: (err) => {
+            console.error('Failed to update task', err);
+          },
+        });
+      }
     });
   }
 }
