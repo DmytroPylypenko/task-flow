@@ -43,7 +43,10 @@ export class BoardDetailComponent {
   newTaskForms = new Map<number, FormGroup>();
 
   // Initialize form control for title and set isEditingTitle flag for UI
-  titleControl = new FormControl('', { nonNullable: true });
+  titleControl = new FormControl('', {
+    nonNullable: true,
+    validators: [Validators.maxLength(50)],
+  });
   isEditingTitle = false;
 
   /**
