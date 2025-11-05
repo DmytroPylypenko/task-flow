@@ -107,6 +107,38 @@ public class BoardsController : ControllerBase
     }
     
     /// <summary>
+    /// Handles HTTP PUT requests to update the name of an existing board owned by the authenticated user.
+    /// </summary>
+    /// <param name="id">The ID of the board to update.</param>
+    /// <param name="boardDto">The request payload containing the updated board name.</param>
+    /// <returns>
+    /// <see cref="OkObjectResult"/> containing the updated board if the operation succeeds;  
+    /// <see cref="NotFoundObjectResult"/> if the board does not exist or is not owned by the user;  
+    /// <see cref="UnauthorizedResult"/> if the user's identity cannot be verified.
+    /// </returns>
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateBoard(int id, [FromBody] BoardUpdateDto boardDto)
+    {
+        // 1. Extract the authenticated user's ID from JWT claims.
+        string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!int.TryParse(userId, out var parsedUserId))
+        {
+            return Unauthorized();
+        }
+
+        // 2. Attempt to update the board.
+        var updatedBoard = await _boardRepository.UpdateBoardAsync(id, boardDto.Name, parsedUserId);
+
+        // 3. Return 404 if the task does not exist or is not owned by the user.
+        if (updatedBoard == null)
+        {
+            return NotFound("Board not found or you do not have permission to edit it.");
+        }
+
+        return Ok(updatedBoard);
+    }
+    
+    /// <summary>
     /// Deletes a board owned by the authenticated user.
     /// </summary>
     /// <param name="id">The ID of the board to delete.</param>

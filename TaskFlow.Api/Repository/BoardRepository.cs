@@ -48,6 +48,24 @@ public class BoardRepository :  IBoardRepository
     }
     
     /// <inheritdoc />
+    public async Task<Board?> UpdateBoardAsync(int boardId, string newName, int userId)
+    {
+        // 1. Find the board and verify ownership.
+        var board = await _context.Boards
+            .FirstOrDefaultAsync(b => b.Id == boardId && b.UserId == userId);
+
+        if (board == null)
+        {
+            return null;
+        }
+
+        // 2. Rename the board
+        board.Name = newName;
+        await _context.SaveChangesAsync();
+        return board;
+    }
+    
+    /// <inheritdoc />
     public async Task<bool> DeleteBoardAsync(int boardId, int userId)
     {
         // 1. Find the board and verify ownership.

@@ -29,6 +29,21 @@ public interface IBoardRepository
     Task<Board> CreateBoardAsync(Board board);
     
     /// <summary>
+    /// Updates the name of a board owned by the specified user.
+    /// </summary>
+    /// <param name="boardId">The ID of the board to update.</param>
+    /// <param name="newName">The new name to assign to the board.</param>
+    /// <param name="userId">
+    /// The ID of the authenticated user attempting the update.  
+    /// Used to ensure that a user can only modify their own boards.
+    /// </param>
+    /// <returns>
+    /// The updated <see cref="Board"/> if the board exists and belongs to the user;  
+    /// otherwise, <c>null</c>.
+    /// </returns>
+    Task<Board?> UpdateBoardAsync(int boardId, string newName, int userId);
+    
+    /// <summary>
     /// Deletes a board owned by the specified user.
     /// </summary>
     /// <param name="boardId">The ID of the board to delete.</param>

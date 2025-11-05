@@ -7,12 +7,29 @@
   </div>
   } @else if (board) {
   <div class="board-header">
+    @if (isEditingTitle) {
+    <div class="title-edit-form">
+      <input
+        type="text"
+        [formControl]="titleControl"
+        (keyup.enter)="saveTitle()"
+        (keyup.escape)="cancelEditingTitle()"
+        autofocus
+        maxlength="50"
+      />
+      <button (click)="saveTitle()">Save</button>
+      <button (click)="cancelEditingTitle()">Cancel</button>
+    </div>
+    } @else {
     <h1>
-      {{ board.name }}
+      <span (click)="startEditingTitle()" class="editable-title" title="Click to edit">
+        {{ board.name }}
+      </span>
       <button class="delete-board-button" (click)="onDeleteBoard()" [disabled]="isLoading">
         Delete Board
       </button>
     </h1>
+    }
   </div>
 
   <div class="columns-container" cdkDropListGroup>
