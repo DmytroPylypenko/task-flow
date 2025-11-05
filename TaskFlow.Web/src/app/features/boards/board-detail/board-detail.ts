@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { BoardService } from '../../../core/services/board';
 import { Board } from '../../../models/board.model';
 import {
@@ -32,6 +32,7 @@ export class BoardDetailComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly fb = inject(FormBuilder);
   private readonly dialog = inject(Dialog);
+  private readonly router = inject(Router);
 
   // --- Component state management ---
   board: Board | null = null;
@@ -216,6 +217,29 @@ export class BoardDetailComponent {
         column.tasks.splice(index, 1);
         return;
       }
+    }
+  }
+
+  /**
+   * Deletes the current board and navigates back to the board list.
+   */
+  onDeleteBoard(): void {
+    if (!this.board) return;
+
+    // Show a confirmation dialog to the user
+    if (confirm(`Are you sure you want to delete the board "${this.board.name}"? This cannot be undone.`)) {
+      this.isLoading = true;
+      
+      this.boardService.deleteBoard(this.board.id).subscribe({
+        next: () => {
+          this.router.navigate(['/boards']);
+        },
+        error: (err) => {
+          console.error('Failed to delete board', err);
+          this.errorMessage = 'Failed to delete board. Please try again.';
+          this.isLoading = false;
+        }
+      });
     }
   }
 }
