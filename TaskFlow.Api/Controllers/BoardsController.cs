@@ -105,4 +105,35 @@ public class BoardsController : ControllerBase
         // 5. Return a 201 Created response with a Location header.
         return CreatedAtAction(nameof(GetBoard), new { id = createdBoard.Id }, createdBoard);
     }
+    
+    /// <summary>
+    /// Deletes a board owned by the authenticated user.
+    /// </summary>
+    /// <param name="id">The ID of the board to delete.</param>
+    /// <returns>
+    /// <see cref="NoContentResult"/> if the board was successfully deleted;  
+    /// <see cref="NotFoundObjectResult"/> if the board does not exist or the user is not authorized;  
+    /// <see cref="UnauthorizedResult"/> if the user's identity could not be verified.
+    /// </returns>
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteBoard(int id)
+    {
+        // 1. Extract the authenticated user's ID from JWT claims.
+        string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!int.TryParse(userId, out var parsedUserId))
+        {
+            return Unauthorized();
+        }
+
+        // 2. Attempt to delete the board.
+        var wasSuccessful = await _boardRepository.DeleteBoardAsync(id, parsedUserId);
+
+        // 3. Return 404 if the task does not exist or is not owned by the user.
+        if (!wasSuccessful)
+        {
+            return NotFound("Board not found or you do not have permission to delete it.");
+        }
+
+        return NoContent(); 
+    }
 }

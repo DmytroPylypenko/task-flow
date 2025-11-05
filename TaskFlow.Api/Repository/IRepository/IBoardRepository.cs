@@ -27,4 +27,18 @@ public interface IBoardRepository
     /// <param name="board">The Board object to create.</param>
     /// <returns>The newly created Board object, including its generated ID.</returns>
     Task<Board> CreateBoardAsync(Board board);
+    
+    /// <summary>
+    /// Deletes a board owned by the specified user.
+    /// </summary>
+    /// <param name="boardId">The ID of the board to delete.</param>
+    /// <param name="userId">
+    /// The ID of the authenticated user attempting the deletion.  
+    /// Used to verify that the user can only delete their own boards.
+    /// </param>
+    /// <returns>
+    /// <c>true</c> if the board existed and was successfully deleted;  
+    /// <c>false</c> if the board was not found or did not belong to the user.
+    /// </returns>
+    Task<bool> DeleteBoardAsync(int boardId, int userId);
 }
