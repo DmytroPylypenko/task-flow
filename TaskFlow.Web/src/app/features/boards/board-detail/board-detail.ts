@@ -15,8 +15,8 @@ import { Column } from '../../../models/column.model';
 import { TaskCreate } from '../../../models/task-create.model';
 import { Dialog } from '@angular/cdk/dialog';
 import { TaskDetailModalComponent } from '../../tasks/task-detail-modal/task-detail-modal';
-import { TaskUpdate } from '../../../models/task-update.model';
 import { TaskDialogResult } from '../../../models/task-dialog-result.model';
+import { FormControl } from '@angular/forms';
 
 /**
  * Displays the details of a single board.
@@ -41,6 +41,10 @@ export class BoardDetailComponent {
 
   // A Map to store a FormGroup for each column, keyed by its column ID.
   newTaskForms = new Map<number, FormGroup>();
+
+  // Initialize form control for title and set isEditingTitle flag for UI
+  titleControl = new FormControl('', { nonNullable: true });
+  isEditingTitle = false;
 
   /**
    * Initializes the component and fetches the board details based on the provided ID in the URL.
@@ -227,9 +231,13 @@ export class BoardDetailComponent {
     if (!this.board) return;
 
     // Show a confirmation dialog to the user
-    if (confirm(`Are you sure you want to delete the board "${this.board.name}"? This cannot be undone.`)) {
+    if (
+      confirm(
+        `Are you sure you want to delete the board "${this.board.name}"? This cannot be undone.`
+      )
+    ) {
       this.isLoading = true;
-      
+
       this.boardService.deleteBoard(this.board.id).subscribe({
         next: () => {
           this.router.navigate(['/boards']);
@@ -238,8 +246,53 @@ export class BoardDetailComponent {
           console.error('Failed to delete board', err);
           this.errorMessage = 'Failed to delete board. Please try again.';
           this.isLoading = false;
-        }
+        },
       });
     }
+  }
+
+  /**
+   * Starts editing the title of the board.
+   */
+  startEditingTitle(): void {
+    if (this.board) {
+      this.isEditingTitle = true;
+      this.titleControl.setValue(this.board.name);
+    }
+  }
+
+  /**
+   * Cancels editing the title of the board.
+   */
+  cancelEditingTitle(): void {
+    this.isEditingTitle = false;
+  }
+
+  /**
+   * Saves the changes made to the title of the board.
+   * Updates the board name and triggers an optimistic update.
+   */
+  saveTitle(): void {
+    if (!this.board || this.titleControl.invalid) {
+      this.cancelEditingTitle();
+      return;
+    }
+
+    const newName = this.titleControl.value.trim();
+    if (newName === this.board.name || !newName) {
+      this.cancelEditingTitle();
+      return;
+    }
+
+    const oldName = this.board.name;
+    this.board.name = newName;
+    this.isEditingTitle = false;
+
+    this.boardService.updateBoard(this.board.id, newName).subscribe({
+      error: (err) => {
+        console.error('Failed to rename board', err);
+        if (this.board) this.board.name = oldName;
+      },
+    });
   }
 }
