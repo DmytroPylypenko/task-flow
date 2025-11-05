@@ -12,13 +12,17 @@ import { TaskUpdate } from '../../models/task-update.model';
  * BoardService handles board-related operations.
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class BoardService {
   private readonly boardsApiUrl = `${environment.apiUrl}/boards`;
   private readonly tasksApiUrl = `${environment.apiUrl}/tasks`;
   private readonly columnsApiUrl = `${environment.apiUrl}/columns`;
   private readonly http = inject(HttpClient);
+
+  // ========================================
+  // Boards Region
+  // ========================================
 
   /**
    * Fetches all boards for the currently authenticated user.
@@ -43,6 +47,27 @@ export class BoardService {
   createBoard(boardName: string): Observable<Board> {
     return this.http.post<Board>(this.boardsApiUrl, { name: boardName });
   }
+
+  /**
+   * Updates an existing board's name.
+   * @param boardId The ID of the board to update.
+   * @param newName The new name for the board.
+   */
+  updateBoard(boardId: number, newName: string): Observable<Board> {
+    return this.http.put<Board>(`${this.boardsApiUrl}/${boardId}`, { name: newName });
+  }
+
+  /**
+   * Deletes a board from the database.
+   * @param boardId The ID of the board to delete.
+   */
+  deleteBoard(boardId: number): Observable<void> {
+    return this.http.delete<void>(`${this.boardsApiUrl}/${boardId}`);
+  }
+
+  // ========================================
+  // Tasks Region
+  // ========================================
 
   /**
    * Moves a task to a different column.
@@ -87,13 +112,5 @@ export class BoardService {
    */
   deleteTask(taskId: number): Observable<void> {
     return this.http.delete<void>(`${this.tasksApiUrl}/${taskId}`);
-  }
-
-  /**
-   * Deletes a board from the database.
-   * @param boardId The ID of the board to delete.
-   */
-  deleteBoard(boardId: number): Observable<void> {
-    return this.http.delete<void>(`${this.boardsApiUrl}/${boardId}`);
   }
 }
