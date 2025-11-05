@@ -15,7 +15,7 @@ import { TaskUpdate } from '../../models/task-update.model';
   providedIn: 'root'
 })
 export class BoardService {
-  private readonly apiUrl = `${environment.apiUrl}/boards`;
+  private readonly boardsApiUrl = `${environment.apiUrl}/boards`;
   private readonly tasksApiUrl = `${environment.apiUrl}/tasks`;
   private readonly columnsApiUrl = `${environment.apiUrl}/columns`;
   private readonly http = inject(HttpClient);
@@ -25,7 +25,7 @@ export class BoardService {
    * The JWT interceptor will automatically add the auth header.
    */
   getBoards(): Observable<Board[]> {
-    return this.http.get<Board[]>(this.apiUrl);
+    return this.http.get<Board[]>(this.boardsApiUrl);
   }
 
   /**
@@ -33,7 +33,7 @@ export class BoardService {
    * @param id The ID of the board to fetch.
    */
   getBoardById(id: number): Observable<Board> {
-    return this.http.get<Board>(`${this.apiUrl}/${id}`);
+    return this.http.get<Board>(`${this.boardsApiUrl}/${id}`);
   }
 
   /**
@@ -41,7 +41,7 @@ export class BoardService {
    * @param boardName The name of the new board.
    */
   createBoard(boardName: string): Observable<Board> {
-    return this.http.post<Board>(this.apiUrl, { name: boardName });
+    return this.http.post<Board>(this.boardsApiUrl, { name: boardName });
   }
 
   /**
@@ -87,5 +87,13 @@ export class BoardService {
    */
   deleteTask(taskId: number): Observable<void> {
     return this.http.delete<void>(`${this.tasksApiUrl}/${taskId}`);
+  }
+
+  /**
+   * Deletes a board from the database.
+   * @param boardId The ID of the board to delete.
+   */
+  deleteBoard(boardId: number): Observable<void> {
+    return this.http.delete<void>(`${this.boardsApiUrl}/${boardId}`);
   }
 }

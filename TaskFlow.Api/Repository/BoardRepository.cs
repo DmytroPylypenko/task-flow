@@ -46,4 +46,22 @@ public class BoardRepository :  IBoardRepository
         await _context.SaveChangesAsync();
         return board;
     }
+    
+    /// <inheritdoc />
+    public async Task<bool> DeleteBoardAsync(int boardId, int userId)
+    {
+        // 1. Find the board and verify ownership.
+        var board = await _context.Boards
+            .FirstOrDefaultAsync(b => b.Id == boardId && b.UserId == userId);
+
+        if (board == null)
+        {
+            return false;
+        }
+
+        // 2. Remove the board.
+        _context.Boards.Remove(board);
+        await _context.SaveChangesAsync();
+        return true;
+    }
 }
