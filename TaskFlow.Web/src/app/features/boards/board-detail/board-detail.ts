@@ -49,6 +49,14 @@ export class BoardDetailComponent {
   });
   isEditingTitle = false;
 
+  // Form for adding a new column
+  addColumnForm = this.fb.group({
+    name: this.fb.control('', {
+      nonNullable: true,
+      validators: [Validators.required, Validators.maxLength(50)],
+    }),
+  });
+
   /**
    * Initializes the component and fetches the board details based on the provided ID in the URL.
    * If no ID is provided, displays an error message.
@@ -296,6 +304,38 @@ export class BoardDetailComponent {
         console.error('Failed to rename board', err);
         if (this.board) this.board.name = oldName;
       },
+    });
+  }
+
+  /**
+   * Creates a new column for the current board.
+   */
+  onAddColumn(): void {
+    if (!this.board || this.addColumnForm.invalid) return;
+
+    const columnName = this.addColumnForm.value.name?.trim();
+
+    if (!columnName) {
+      return;
+    }
+
+    this.boardService.createColumn(this.board.id, columnName).subscribe({
+      next: (newColumn) => {
+        // Optimistically add the new column to the UI
+        newColumn.tasks = [];
+        this.board?.columns.push(newColumn);
+
+        this.addColumnForm.reset();
+
+        // Initialize a new task form for this new column
+        this.newTaskForms.set(
+          newColumn.id,
+          this.fb.group({
+            title: ['', [Validators.required, Validators.maxLength(100)]],
+          })
+        );
+      },
+      error: (err) => console.error('Failed to create column', err),
     });
   }
 }

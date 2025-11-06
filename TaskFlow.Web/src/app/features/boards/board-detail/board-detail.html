@@ -56,6 +56,20 @@
       </ul>
     </div>
     }
+
+    <div class="column add-column">
+    <form [formGroup]="addColumnForm" (ngSubmit)="onAddColumn()">
+      <input 
+        type="text" 
+        formControlName="name" 
+        placeholder="+ Add another list"
+        class="add-column-input"
+      >
+       @if (addColumnForm.dirty && addColumnForm.value.name) {
+          <button type="submit" [disabled]="addColumnForm.invalid">Add List</button>
+       }
+    </form>
+  </div>
   </div>
   }
 </div>
