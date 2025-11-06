@@ -57,6 +57,13 @@ export class BoardDetailComponent {
     }),
   });
 
+  // Track which column is being edited and hold the temporary name
+  editingColumnId: number | null = null;
+  editColumnNameControl = new FormControl('', {
+    nonNullable: true,
+    validators: [Validators.required, Validators.maxLength(50)],
+  });
+
   /**
    * Initializes the component and fetches the board details based on the provided ID in the URL.
    * If no ID is provided, displays an error message.
@@ -336,6 +343,58 @@ export class BoardDetailComponent {
         );
       },
       error: (err) => console.error('Failed to create column', err),
+    });
+  }
+
+  /**
+   * Enables edit mode for a specific column.
+   */
+  startEditingColumn(column: Column): void {
+    this.editingColumnId = column.id;
+    this.editColumnNameControl.setValue(column.name);
+  }
+
+  /**
+   * Updates the column name.
+   */
+  onUpdateColumnName(column: Column): void {
+    if (this.editingColumnId !== column.id || this.editColumnNameControl.invalid) {
+      this.editingColumnId = null;
+      return;
+    }
+
+    const newName = this.editColumnNameControl.value.trim();
+
+    if (!newName || newName === column.name) {
+      this.editingColumnId = null;
+      return;
+    }
+
+    const oldName = column.name;
+    column.name = newName;
+    this.editingColumnId = null;
+
+    this.boardService.updateColumn(column.id, newName).subscribe({
+      error: (err) => {
+        console.error('Failed to update column name', err);
+        column.name = oldName; 
+      },
+    });
+  }
+
+  /**
+   * Deletes a column.
+   */
+  onDeleteColumn(columnId: number): void {
+    if (!confirm('Delete this column and all its tasks?')) return;
+
+    this.boardService.deleteColumn(columnId).subscribe({
+      next: () => {
+        if (this.board) {
+          this.board.columns = this.board.columns.filter((c) => c.id !== columnId);
+        }
+      },
+      error: (err) => console.error('Failed to delete column', err),
     });
   }
 }
