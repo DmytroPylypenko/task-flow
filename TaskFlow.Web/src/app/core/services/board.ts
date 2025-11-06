@@ -7,6 +7,7 @@ import { TaskReorder } from '../../models/task-reorder.model';
 import { TaskCreate } from '../../models/task-create.model';
 import { Task } from '../../models/task.model';
 import { TaskUpdate } from '../../models/task-update.model';
+import { Column } from '../../models/column.model';
 
 /**
  * BoardService handles board-related operations.
@@ -66,6 +67,36 @@ export class BoardService {
   }
 
   // ========================================
+  // Columns Region
+  // ========================================
+
+  /**
+   * Creates a new column in a specific board.
+   * @param boardId The ID of the board.
+   * @param name The name of the new column.
+   */
+  createColumn(boardId: number, name: string): Observable<Column> {
+    return this.http.post<Column>(this.columnsApiUrl, { boardId, name });
+  }
+
+  /**
+   * Updates the name of an existing column.
+   * @param columnId The ID of the column to update.
+   * @param name The new name for the column.
+   */
+  updateColumn(columnId: number, name: string): Observable<Column> {
+    return this.http.put<Column>(`${this.columnsApiUrl}/${columnId}`, { name });
+  }
+
+  /**
+   * Deletes a column and all its tasks.
+   * @param columnId The ID of the column to delete.
+   */
+  deleteColumn(columnId: number): Observable<void> {
+    return this.http.delete<void>(`${this.columnsApiUrl}/${columnId}`);
+  }
+
+  // ========================================
   // Tasks Region
   // ========================================
 
@@ -85,7 +116,7 @@ export class BoardService {
    * @param payload The array of tasks with their new positions.
    */
   reorderTasks(columnId: number, payload: TaskReorder[]): Observable<void> {
-    const reorderUrl = `${this.columnsApiUrl}/${columnId}/reorder`;
+    const reorderUrl = `${this.tasksApiUrl}/${columnId}/reorder`;
     return this.http.patch<void>(reorderUrl, payload);
   }
 

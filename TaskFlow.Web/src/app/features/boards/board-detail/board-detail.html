@@ -35,7 +35,27 @@
   <div class="columns-container" cdkDropListGroup>
     @for (column of board.columns; track column.id) {
     <div class="column">
-      <h3>{{ column.name }}</h3>
+      <div class="column-header">
+        @if (editingColumnId === column.id) {
+        <input
+          class="column-name-input"
+          [formControl]="editColumnNameControl"
+          (keyup.enter)="onUpdateColumnName(column)"
+          (blur)="onUpdateColumnName(column)"
+          autofocus
+          maxlength="50"
+        />
+        } @else {
+        <h3>
+          <span (click)="startEditingColumn(column)" title="Click to rename">
+            {{ column.name }} </span
+          >
+          <button class="delete-column-btn" (click)="onDeleteColumn(column.id)">
+            Delete Column
+          </button>
+        </h3>
+        }
+      </div>
 
       <form [formGroup]="newTaskForms.get(column.id)!" (ngSubmit)="onCreateTask(column)">
         <input type="text" formControlName="title" placeholder="New task..." />
@@ -56,6 +76,20 @@
       </ul>
     </div>
     }
+
+    <div class="column add-column">
+      <form [formGroup]="addColumnForm" (ngSubmit)="onAddColumn()">
+        <input
+          type="text"
+          formControlName="name"
+          placeholder="+ Add another list"
+          class="add-column-input"
+        />
+        @if (addColumnForm.dirty && addColumnForm.value.name) {
+        <button type="submit" [disabled]="addColumnForm.invalid">Add List</button>
+        }
+      </form>
+    </div>
   </div>
   }
 </div>
