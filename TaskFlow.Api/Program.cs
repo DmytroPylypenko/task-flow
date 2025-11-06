@@ -21,6 +21,7 @@ public class Program
         builder.Services.AddScoped<IPasswordHasher, PBKDF2PasswordHasher>();
         builder.Services.AddScoped<IUserRepository, UserRepository>();
         builder.Services.AddScoped<IBoardRepository, BoardRepository>();
+        builder.Services.AddScoped<IColumnRepository, ColumnRepository>();
         builder.Services.AddScoped<ITaskRepository, TaskRepository>();
         builder.Services.AddScoped<ITokenService, TokenService>();
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
