@@ -85,7 +85,7 @@ export class BoardService {
    * @param payload The array of tasks with their new positions.
    */
   reorderTasks(columnId: number, payload: TaskReorder[]): Observable<void> {
-    const reorderUrl = `${this.columnsApiUrl}/${columnId}/reorder`;
+    const reorderUrl = `${this.tasksApiUrl}/${columnId}/reorder`;
     return this.http.patch<void>(reorderUrl, payload);
   }
 
