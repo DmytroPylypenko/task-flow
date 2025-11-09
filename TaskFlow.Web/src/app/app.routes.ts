@@ -4,6 +4,7 @@ import { RegisterComponent } from './features/auth/register/register';
 import { BoardListComponent } from './features/boards/board-list/board-list';
 import { authGuard } from './core/guards/auth-guard';
 import { BoardDetailComponent } from './features/boards/board-detail/board-detail';
+import { MainLayoutComponent } from './core/layout/main-layout/main-layout';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -11,15 +12,13 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
 
-  { 
-    path: 'boards/:id', 
-    component: BoardDetailComponent,
-    canActivate: [authGuard] 
-  },
-
-  { 
-    path: 'boards', 
-    component: BoardListComponent,
-    canActivate: [authGuard] 
-  },
+  {
+    path: '',
+    component: MainLayoutComponent,
+    canActivate: [authGuard],
+    children: [
+      { path: 'boards', component: BoardListComponent },
+      { path: 'boards/:id', component: BoardDetailComponent },
+    ]
+  }
 ];

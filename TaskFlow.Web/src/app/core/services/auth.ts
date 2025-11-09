@@ -32,4 +32,11 @@ export class AuthService {
   login(userLoginData: UserLogin): Observable<AuthToken> {
     return this.http.post<AuthToken>(`${this.apiUrl}/login`, userLoginData);
   }
+
+  /**
+   * Logs the user out by clearing the authentication token.
+   */
+  logout(): void {
+    localStorage.removeItem('authToken');
+  }
 }
