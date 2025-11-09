@@ -1,14 +1,15 @@
 import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { LucideAngularModule, LayoutDashboard } from 'lucide-angular';
 
 /**
  * Handles the user login page and form interactions.
  */
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterLink, LucideAngularModule],
   templateUrl: './login.html',
   styleUrl: './login.scss',
 })
@@ -16,6 +17,8 @@ export class LoginComponent {
   private readonly fb = inject(FormBuilder);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+
+  readonly LogoIcon = LayoutDashboard;
 
   isLoading = false;
   errorMessage: string | null = null;
@@ -47,6 +50,7 @@ export class LoginComponent {
       error: (err) => {
         console.error('Login failed', err);
         this.errorMessage = 'Invalid email or password. Please try again.';
+        this.isLoading = false;
       },
       complete: () => {
         this.isLoading = false;
