@@ -1,94 +1,209 @@
-<div class="board-detail-container">
+<div class="p-8" (click)="closeAllPopups()">
+  <div class="mb-4 flex items-center justify-between border-b border-white/5 pb-8">
+    <div class="flex items-center gap-4">
+      <a
+        routerLink="/boards"
+        class="text-gray-500 hover:text-white hover:bg-white/5 gap-2 rounded-lg h-9 px-3 inline-flex items-center transition-colors"
+      >
+        <lucide-icon [img]="ArrowLeftIcon" class="h-4 w-4"></lucide-icon>
+        Back to Boards
+      </a>
+      <span class="text-gray-700">/</span>
+      <h1 class="text-xl font-semibold text-white">
+        @if (board) {
+        {{ board.name }}
+        } @else { Loading... }
+      </h1>
+    </div>
+
+    <button
+      (click)="openCreateColumnModal()"
+      class="bg-primary hover:bg-primary-light text-white font-medium rounded-xl text-sm px-6 py-3 transition-all duration-200 flex items-center gap-2 shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/50 hover:scale-105 active:scale-95"
+    >
+      <lucide-icon [img]="PlusIcon" class="h-4 w-4"></lucide-icon>
+      New Column
+    </button>
+  </div>
+
   @if (isLoading) {
-  <p>Loading board...</p>
+  <div class="text-gray-400 animate-pulse">Loading board details...</div>
   } @else if (errorMessage) {
-  <div class="error-message">
-    <p>{{ errorMessage }}</p>
+  <div class="p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400">
+    {{ errorMessage }}
   </div>
   } @else if (board) {
-  <div class="board-header">
-    @if (isEditingTitle) {
-    <div class="title-edit-form">
-      <input
-        type="text"
-        [formControl]="titleControl"
-        (keyup.enter)="saveTitle()"
-        (keyup.escape)="cancelEditingTitle()"
-        autofocus
-        maxlength="50"
-      />
-      <button (click)="saveTitle()">Save</button>
-      <button (click)="cancelEditingTitle()">Cancel</button>
-    </div>
-    } @else {
-    <h1>
-      <span (click)="startEditingTitle()" class="editable-title" title="Click to edit">
-        {{ board.name }}
-      </span>
-      <button class="delete-board-button" (click)="onDeleteBoard()" [disabled]="isLoading">
-        Delete Board
-      </button>
-    </h1>
-    }
-  </div>
-
-  <div class="columns-container" cdkDropListGroup>
-    @for (column of board.columns; track column.id) {
-    <div class="column">
-      <div class="column-header">
-        @if (editingColumnId === column.id) {
-        <input
-          class="column-name-input"
-          [formControl]="editColumnNameControl"
-          (keyup.enter)="onUpdateColumnName(column)"
-          (blur)="onUpdateColumnName(column)"
-          autofocus
-          maxlength="50"
-        />
-        } @else {
-        <h3>
-          <span (click)="startEditingColumn(column)" title="Click to rename">
-            {{ column.name }} </span
-          >
-          <button class="delete-column-btn" (click)="onDeleteColumn(column.id)">
-            Delete Column
-          </button>
-        </h3>
-        }
-      </div>
-
-      <form [formGroup]="newTaskForms.get(column.id)!" (ngSubmit)="onCreateTask(column)">
-        <input type="text" formControlName="title" placeholder="New task..." />
-        <button type="submit" [disabled]="newTaskForms.get(column.id)?.invalid">[+]</button>
-      </form>
-
-      <ul
-        cdkDropList
-        [id]="column.id.toString()"
-        [cdkDropListData]="column.tasks"
-        (cdkDropListDropped)="drop($event)"
+  <div class="overflow-x-auto pb-8">
+    <div class="flex gap-8 min-h-[600px]" cdkDropListGroup>
+      @for (column of board.columns; track column.id) {
+      <div
+        class="flex-shrink-0 w-80 bg-dark-900/40 rounded-2xl p-5 border border-white/5"
+        (click)="$event.stopPropagation()"
       >
-        @for (task of column.tasks; track task.id) {
-        <li class="task-card" cdkDrag (click)="openTaskModal(task)">{{ task.title }}</li>
-        } @empty {
-        <p class="no-tasks">No tasks in this column.</p>
-        }
-      </ul>
-    </div>
-    }
+        <div class="mb-5 flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            @if (editingColumnId === column.id) {
+            <input
+              class="bg-dark-800 text-white p-1 rounded w-full outline-none focus:ring-1 focus:ring-primary"
+              [formControl]="editColumnNameControl"
+              (keyup.enter)="onUpdateColumnName(column)"
+              (blur)="onUpdateColumnName(column)"
+              autofocus
+            />
+            } @else {
+            <h3 class="text-white font-medium cursor-default">
+              {{ column.name }}
+            </h3>
+            }
+            <span class="text-gray-500 text-sm">• {{ column.tasks.length }}</span>
+          </div>
 
-    <div class="column add-column">
-      <form [formGroup]="addColumnForm" (ngSubmit)="onAddColumn()">
-        <input
-          type="text"
-          formControlName="name"
-          placeholder="+ Add another list"
-          class="add-column-input"
-        />
-        @if (addColumnForm.dirty && addColumnForm.value.name) {
-        <button type="submit" [disabled]="addColumnForm.invalid">Add List</button>
-        }
-      </form>
+          <div class="flex items-center gap-1 relative">
+            <button
+              (click)="showAddTaskForm(column.id)"
+              class="h-8 w-8 text-gray-500 hover:text-white hover:bg-white/10 rounded-lg transition-all"
+              title="Add Task"
+            >
+              <lucide-icon [img]="PlusIcon" class="h-4 w-4 mx-auto"></lucide-icon>
+            </button>
+
+            <button
+              (click)="toggleColumnMenu($event, column.id)"
+              class="h-8 w-8 text-gray-500 hover:text-white hover:bg-white/10 rounded-lg transition-all"
+              [class.bg-white-10]="openColumnMenuId === column.id"
+            >
+              <lucide-icon [img]="MoreIcon" class="h-4 w-4 mx-auto"></lucide-icon>
+            </button>
+
+            @if (openColumnMenuId === column.id) {
+            <div
+              class="absolute right-0 top-10 w-48 bg-dark-800 border border-white/10 rounded-xl shadow-2xl p-1.5 z-50 animate-in fade-in zoom-in-95 duration-100"
+            >
+              <button
+                (click)="startEditingColumn(column)"
+                class="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/5 rounded-lg transition-colors text-left"
+              >
+                <lucide-icon [img]="EditIcon" class="h-4 w-4"></lucide-icon>
+                Rename
+              </button>
+              <div class="h-px bg-white/5 my-1"></div>
+              <button
+                (click)="onDeleteColumn(column)"
+                class="w-full flex items-center gap-3 px-3 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors text-left"
+              >
+                <lucide-icon [img]="TrashIcon" class="h-4 w-4"></lucide-icon>
+                Delete Column
+              </button>
+            </div>
+            }
+          </div>
+        </div>
+
+        <ul
+          cdkDropList
+          [id]="column.id.toString()"
+          [cdkDropListData]="column.tasks"
+          (cdkDropListDropped)="drop($event)"
+          [cdkDropListConnectedTo]="columnIds"
+          class="space-y-3.5 pb-3 pr-1 h-full min-h-[150px]"
+        >
+          @if (addingTaskToColumnId === column.id) {
+          <li class="p-3 bg-dark-800 rounded-xl shadow-lg border border-white/5">
+            <form [formGroup]="newTaskForms.get(column.id)!" (ngSubmit)="onCreateTask(column)">
+              <input
+                type="text"
+                formControlName="title"
+                placeholder="Enter task title..."
+                class="w-full bg-dark-950 border border-dark-800 text-white placeholder:text-gray-500 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg h-10 px-3 transition-all outline-none text-sm"
+                autofocus
+              />
+              <div class="flex gap-2 mt-3">
+                <button
+                  type="submit"
+                  [disabled]="newTaskForms.get(column.id)?.invalid"
+                  class="flex-1 bg-gradient-to-r from-primary to-primary-light hover:from-primary-dark hover:to-primary rounded-lg h-8 text-white text-xs font-medium disabled:opacity-60 transition-all"
+                >
+                  Save
+                </button>
+                <button
+                  type="button"
+                  (click)="cancelAddTask(column.id)"
+                  class="text-gray-400 hover:text-white hover:bg-white/5 rounded-lg h-8 px-3 text-xs transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </li>
+          } @for (task of column.tasks; track task.id) {
+          <li
+            (click)="openTaskModal(task)"
+            cdkDrag
+            class="w-full p-4 bg-dark-900 border border-white/5 hover:border-primary/70 cursor-pointer transition-all duration-200 shadow-md hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-1 group rounded-xl"
+          >
+            <div class="flex items-start gap-3">
+              <lucide-icon
+                [img]="GripVerticalIcon"
+                cdkDragHandle
+                class="h-5 w-5 text-gray-600 cursor-grab flex-shrink-0 mt-1"
+              ></lucide-icon>
+
+              <div class="flex-grow">
+                <h4
+                  class="text-white text-sm font-medium group-hover:text-primary transition-colors"
+                >
+                  {{ task.title }}
+                </h4>
+
+                @if (task.description) {
+                <p class="text-gray-500 text-xs line-clamp-2 mt-2 mb-3 leading-relaxed">
+                  {{ task.description }}
+                </p>
+                }
+
+                <span
+                  class="inline-flex items-center text-primary text-[10px] font-medium px-2 py-0.5 bg-gradient-to-r from-primary/10 to-primary-light/5 rounded border border-primary/20"
+                >
+                  #TASK-{{ task.id }}
+                </span>
+              </div>
+            </div>
+
+            <div *cdkDragPreview class="p-4 bg-dark-800 rounded-xl shadow-2xl">
+              <h4 class="text-white text-sm font-medium">{{ task.title }}</h4>
+            </div>
+          </li>
+          } @empty { @if (addingTaskToColumnId !== column.id) {
+          <div
+            class="flex flex-col items-center justify-center py-12 px-4 border-2 border-dashed border-white/5 rounded-xl text-center"
+          >
+            <p class="text-gray-600 text-sm">No tasks yet</p>
+            <button
+              (click)="showAddTaskForm(column.id)"
+              class="mt-2 text-xs text-primary hover:underline"
+            >
+              Add one
+            </button>
+          </div>
+          } }
+        </ul>
+      </div>
+      } @empty {
+      <div class="text-center py-24 w-full">
+        <div
+          class="inline-flex items-center justify-center h-20 w-20 bg-dark-900 rounded-2xl mb-4 border border-white/5"
+        >
+          <lucide-icon [img]="PlusIcon" class="h-8 w-8 text-gray-600"></lucide-icon>
+        </div>
+        <h3 class="text-xl font-medium text-white mb-2">This board is empty</h3>
+        <p class="text-gray-500 mb-6">Create your first column to get started</p>
+        <button
+          (click)="openCreateColumnModal()"
+          class="text-primary hover:text-primary-light font-medium transition-colors"
+        >
+          Create Column
+        </button>
+      </div>
+      }
     </div>
   </div>
   }

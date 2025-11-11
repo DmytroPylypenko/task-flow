@@ -54,34 +54,6 @@ export class BoardListComponent {
   }
 
   /**
-   * Handles the submission of the new board form.
-   */
-  onCreateBoard(): void {
-    if (this.newBoardForm.invalid) {
-      return;
-    }
-
-    const boardName = this.newBoardForm.value.name?.trim();
-    if (!boardName) {
-      return;
-    }
-
-    this.isLoading = true;
-
-    this.boardService.createBoard(boardName).subscribe({
-      next: (newBoard) => {
-        this.boards.unshift(newBoard);
-        this.newBoardForm.reset();
-        this.isLoading = false;
-      },
-      error: (err) => {
-        console.error('Failed to create board', err);
-        this.isLoading = false;
-      },
-    });
-  }
-
-  /**
    * Opens the CreateBoardModalComponent for creating a board.
    */
   openCreateModal(): void {
