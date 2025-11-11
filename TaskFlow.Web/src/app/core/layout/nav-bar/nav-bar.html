@@ -1,0 +1,55 @@
+<div class="fixed top-0 left-0 right-0 h-16 bg-[#0F1115]/95 backdrop-blur-xl border-b border-white/5 z-50">
+  <div class="h-full px-6 flex items-center justify-between">
+    <div class="flex items-center gap-8">
+      <a routerLink="/boards" class="flex items-center gap-2.5 group">
+        <div class="h-8 w-8 bg-gradient-to-br from-primary to-primary-light rounded-lg flex items-center justify-center shadow-lg shadow-primary/20 transition-transform group-hover:scale-105">
+          <lucide-icon [img]="DashboardIcon" class="h-5 w-5 text-white"></lucide-icon>
+        </div>
+        <span class="bg-gradient-to-r from-primary to-primary-light bg-clip-text text-transparent font-semibold transition-opacity group-hover:opacity-80">
+          TaskFlow
+        </span>
+      </a>
+
+      <nav class="flex items-center gap-2">
+        <a routerLink="/boards"
+           routerLinkActive="text-primary bg-primary/10"
+           [routerLinkActiveOptions]="{exact: true}"
+           class="h-9 px-4 rounded-lg flex items-center gap-2 transition-all text-gray-400 hover:text-white hover:bg-white/5 font-medium">
+           <lucide-icon [img]="DashboardIcon" class="h-4 w-4"></lucide-icon>
+           Dashboard
+        </a>
+      </nav>
+    </div>
+
+    <div class="relative">
+      <button (click)="toggleProfile()" class="h-10 w-10 rounded-full bg-dark-800 flex items-center justify-center hover:ring-2 hover:ring-primary/30 transition-all">
+        <span class="text-sm font-medium text-white">U</span>
+      </button>
+
+      @if (isProfileOpen) {
+        <div class="fixed inset-0 z-40" (click)="isProfileOpen = false"></div>
+
+        <div class="absolute right-0 mt-2 w-64 bg-[#1E2025] border border-white/10 rounded-2xl shadow-2xl p-1.5 z-50">
+          <div class="px-3 py-3 mb-1">
+            <p class="text-white font-medium">User</p>
+            <p class="text-sm text-gray-500">user@example.com</p>
+          </div>
+          <div class="h-px bg-white/5 my-1"></div>
+          <button class="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors text-left">
+            <lucide-icon [img]="UserIcon" class="h-4 w-4"></lucide-icon>
+            Profile
+          </button>
+          <button class="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors text-left">
+            <lucide-icon [img]="SettingsIcon" class="h-4 w-4"></lucide-icon>
+            Settings
+          </button>
+          <div class="h-px bg-white/5 my-1"></div>
+          <button (click)="logout()" class="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors text-left">
+            <lucide-icon [img]="LogOutIcon" class="h-4 w-4"></lucide-icon>
+            Logout
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+</div>

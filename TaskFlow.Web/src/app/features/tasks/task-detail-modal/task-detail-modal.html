@@ -1,23 +1,68 @@
-<div class="modal-container">
-  <form [formGroup]="editTaskForm" (ngSubmit)="save()">
-    <h3>Edit Task</h3>
+<div class="w-full max-w-2xl bg-dark-900 border border-white/10 rounded-3xl shadow-2xl p-8">
+
+  <div class="flex items-start justify-between mb-6">
+    <div>
+      <h2 class="text-2xl font-semibold text-white">Task Details</h2>
+      <span class="mt-2 inline-flex items-center text-primary text-sm px-3 py-1.5 bg-gradient-to-r from-primary/15 to-primary-light/10 rounded-lg border border-primary/20">
+        #TASK-{{ task.id }}
+      </span>
+    </div>
+    <button (click)="cancel()" class="h-8 w-8 text-gray-500 hover:text-white hover:bg-white/10 rounded-lg transition-all">
+      <lucide-icon [img]="CloseIcon" class="h-5 w-5 mx-auto"></lucide-icon>
+    </button>
+  </div>
+
+  <form [formGroup]="editTaskForm" (ngSubmit)="save()" class="space-y-6">
     
-    <div class="form-group">
-      <label for="title">Title</label>
-      <input id="title" type="text" formControlName="title">
+    <div class="space-y-2.5">
+      <label for="task-title" class="text-sm font-medium text-gray-300">Title</label>
+      <input
+        id="task-title"
+        type="text"
+        formControlName="title"
+        placeholder="Enter task title"
+        class="w-full bg-dark-950 border border-dark-800 text-white placeholder:text-gray-500 focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl h-11 px-4 transition-all outline-none"
+      >
     </div>
 
-    <div class="form-group">
-      <label for="description">Description</label>
-      <textarea id="description" formControlName="description" rows="4"></textarea>
+    <div class="space-y-2.5">
+      <label for="task-description" class="text-sm font-medium text-gray-300">Description</label>
+      <textarea
+        id="task-description"
+        formControlName="description"
+        placeholder="Add a more detailed description..."
+        rows="8"
+        class="w-full bg-dark-950 border border-dark-800 text-white placeholder:text-gray-500 resize-none focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl p-4 transition-all outline-none"
+      ></textarea>
     </div>
 
-    <div class="modal-actions">
-      <button type="button" class="delete-button" (click)="delete()">Delete Task</button>
+    <div class="flex justify-between gap-3 pt-6 border-t border-white/5">
+      <button
+        type="button"
+        (click)="delete()"
+        class="px-5 py-2.5 text-sm font-medium border border-red-500/30 text-red-400 hover:text-red-300 hover:bg-red-500/10 hover:border-red-500/50 rounded-xl transition-all"
+      >
+        <div class="flex items-center gap-2">
+          <lucide-icon [img]="TrashIcon" class="h-4 w-4"></lucide-icon>
+          Delete Task
+        </div>
+      </button>
 
-      <div class="right-actions">
-        <button type="button" (click)="cancel()">Cancel</button>
-        <button type="submit" [disabled]="editTaskForm.invalid">Save</button>
+      <div class="flex gap-3">
+        <button
+          type="button"
+          (click)="cancel()"
+          class="px-6 py-3 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 rounded-xl transition-all"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          [disabled]="editTaskForm.invalid"
+          class="px-8 py-3 text-sm font-semibold text-white bg-primary hover:bg-primary-light rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/50 hover:scale-105 active:scale-95"
+        >
+          Save Changes
+        </button>
       </div>
     </div>
   </form>

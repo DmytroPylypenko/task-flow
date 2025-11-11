@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { DialogRef, DIALOG_DATA } from '@angular/cdk/dialog';
+import { LucideAngularModule, Trash2, X } from 'lucide-angular';
 import { Task } from '../../../models/task.model';
 import { TaskUpdate } from '../../../models/task-update.model';
 import { TaskDialogResult } from '../../../models/task-dialog-result.model';
@@ -10,7 +11,7 @@ import { TaskDialogResult } from '../../../models/task-dialog-result.model';
  */
 @Component({
   selector: 'app-task-detail-modal',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, LucideAngularModule],
   templateUrl: './task-detail-modal.html',
   styleUrl: './task-detail-modal.scss',
 })
@@ -19,7 +20,10 @@ export class TaskDetailModalComponent {
 
   // DialogRef is used to close the modal and return the TaskUpdate payload.
   private readonly dialogRef = inject(DialogRef<TaskDialogResult>);
-  private readonly task: Task = inject(DIALOG_DATA);
+  public readonly task: Task = inject(DIALOG_DATA);
+
+  readonly TrashIcon = Trash2;
+  readonly CloseIcon = X;
 
   /**
    * Reactive form for editing task details.

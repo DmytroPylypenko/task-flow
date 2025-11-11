@@ -4,19 +4,26 @@ import { BoardService } from '../../../core/services/board';
 import { Board } from '../../../models/board.model';
 import { RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { LayoutDashboard, LucideAngularModule, Plus } from 'lucide-angular';
+import { Dialog } from '@angular/cdk/dialog';
+import { CreateBoardModalComponent } from '../create-board-modal/create-board-modal';
 
 /**
  * Displays a list of the user's boards.
  */
 @Component({
   selector: 'app-board-list',
-  imports: [RouterLink, ReactiveFormsModule],
+  imports: [RouterLink, ReactiveFormsModule, LucideAngularModule],
   templateUrl: './board-list.html',
   styleUrl: './board-list.scss',
 })
 export class BoardListComponent {
   private readonly boardService = inject(BoardService);
   private readonly fb = inject(FormBuilder);
+  private readonly dialog = inject(Dialog);
+
+  readonly LayoutDashboard = LayoutDashboard;
+  readonly PlusIcon = Plus;
 
   // --- Component state management ---
   boards: Board[] = [];
@@ -47,30 +54,20 @@ export class BoardListComponent {
   }
 
   /**
-   * Handles the submission of the new board form.
+   * Opens the CreateBoardModalComponent for creating a board.
    */
-  onCreateBoard(): void {
-    if (this.newBoardForm.invalid) {
-      return;
-    }
+  openCreateModal(): void {
+    const dialogRef = this.dialog.open<string>(CreateBoardModalComponent, {
+      panelClass: 'custom-modal-panel' 
+    });
 
-    const boardName = this.newBoardForm.value.name?.trim();
-    if (!boardName) {
-      return;
-    }
-
-    this.isLoading = true;
-
-    this.boardService.createBoard(boardName).subscribe({
-      next: (newBoard) => {
-        this.boards.unshift(newBoard);
-        this.newBoardForm.reset();
-        this.isLoading = false;
-      },
-      error: (err) => {
-        console.error('Failed to create board', err);
-        this.isLoading = false;
-      },
+    dialogRef.closed.subscribe(result => {
+      if (result) {
+        this.boardService.createBoard(result).subscribe({
+           next: (newBoard) => this.boards.unshift(newBoard),
+           error: (err) => console.error(err)
+        });
+      }
     });
   }
 }

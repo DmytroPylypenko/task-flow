@@ -1,32 +1,79 @@
-<form [formGroup]="registerForm" (ngSubmit)="onRegister()">
-  <h2>Register</h2>
+<div class="min-h-screen bg-dark-950 flex items-center justify-center p-4">
+  <div class="w-full max-w-md">
 
-  <div>
-    <label for="name">Name</label>
-    <input id="name" type="text" formControlName="name" />
+    <div class="text-center mb-10">
+      <div class="flex items-center justify-center gap-3 mb-4">
+        <div class="h-14 w-14 bg-gradient-to-br from-primary to-primary-light rounded-2xl flex items-center justify-center shadow-xl shadow-primary/40">
+          <lucide-icon [img]="LogoIcon" class="h-8 w-8 text-white"></lucide-icon>
+        </div>
+        <h1 class="text-3xl font-bold bg-gradient-to-r from-primary to-primary-light bg-clip-text text-transparent">
+          TaskFlow
+        </h1>
+      </div>
+      <p class="text-gray-400">Project Management Made Simple</p>
+    </div>
+
+    <div class="bg-dark-900 border border-primary/20 shadow-2xl shadow-black/60 rounded-3xl p-8">
+      <div class="mb-8 text-center">
+        <h2 class="text-2xl font-semibold text-white">Create Account</h2>
+        <p class="text-gray-400 mt-2">Sign up to start managing your projects</p>
+      </div>
+
+      <form [formGroup]="registerForm" (ngSubmit)="onRegister()" class="space-y-5">
+        
+        <div class="space-y-2">
+          <label for="name" class="text-sm font-medium text-gray-300">Full Name</label>
+          <input
+            id="name"
+            type="text"
+            formControlName="name"
+            class="w-full bg-dark-950 border border-dark-800 text-white placeholder:text-gray-500 focus:border-primary focus:ring-2 focus:ring-primary rounded-xl h-11 px-4 transition-all outline-none"
+            placeholder="John Doe"
+          >
+        </div>
+
+        <div class="space-y-2">
+          <label for="email" class="text-sm font-medium text-gray-300">Email Address</label>
+          <input
+            id="email"
+            type="email"
+            formControlName="email"
+            class="w-full bg-dark-950 border border-dark-800 text-white placeholder:text-gray-500 focus:border-primary focus:ring-2 focus:ring-primary rounded-xl h-11 px-4 transition-all outline-none"
+            placeholder="you@example.com"
+          >
+        </div>
+
+        <div class="space-y-2">
+          <label for="password" class="text-sm font-medium text-gray-300">Password</label>
+          <input
+            id="password"
+            type="password"
+            formControlName="password"
+            class="w-full bg-dark-950 border border-dark-800 text-white placeholder:text-gray-500 focus:border-primary focus:ring-2 focus:ring-primary rounded-xl h-11 px-4 transition-all outline-none"
+            placeholder="••••••••"
+          >
+        </div>
+
+        @if (errorMessage) {
+          <div class="p-3 text-sm text-red-200 bg-red-900/20 border border-red-500/20 rounded-xl">
+            {{ errorMessage }}
+          </div>
+        }
+
+        <button
+          type="submit"
+          [disabled]="registerForm.invalid || isLoading"
+          class="w-full bg-gradient-to-r from-primary to-primary-light hover:from-primary-dark hover:to-primary text-white h-12 rounded-xl shadow-lg shadow-primary/40 hover:shadow-xl hover:shadow-primary/50 hover:scale-[1.02] transition-all duration-200 mt-6 font-medium disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:scale-100"
+        >
+          @if (isLoading) { Creating Account... } @else { Create Account }
+        </button>
+
+        <div class="text-center pt-4">
+          <a routerLink="/login" class="text-gray-400 hover:text-primary transition-colors text-sm">
+            Already have an account? <span class="font-medium underline decoration-primary/30 underline-offset-4">Sign in</span>
+          </a>
+        </div>
+      </form>
+    </div>
   </div>
-
-  <div>
-    <label for="email">Email</label>
-    <input id="email" type="email" formControlName="email" />
-  </div>
-
-  <div>
-    <label for="password">Password</label>
-    <input id="password" type="password" formControlName="password" />
-  </div>
-
-  @if(errorMessage) {
-  <div class="error-message">
-    {{ errorMessage }}
-  </div>
-  }
-
-  <button type="submit" [disabled]="registerForm.invalid || isLoading">
-    @if(!isLoading) {
-    <span>Register</span>
-    } @else if (isLoading) {
-    <span>Creating Account...</span>
-    }
-  </button>
-</form>
+</div>

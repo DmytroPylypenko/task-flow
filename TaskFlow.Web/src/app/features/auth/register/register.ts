@@ -1,14 +1,15 @@
 import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { LucideAngularModule, LayoutDashboard } from 'lucide-angular';
 
 /**
  * Handles the user registration page and form interactions.
  */
 @Component({
   selector: 'app-register',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterLink, LucideAngularModule],
   templateUrl: './register.html',
   styleUrl: './register.scss',
 })
@@ -16,6 +17,8 @@ export class RegisterComponent {
   private readonly fb = inject(FormBuilder);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+
+  readonly LogoIcon = LayoutDashboard;
 
   // --- Component state management ---
   isLoading = false;
@@ -46,6 +49,7 @@ export class RegisterComponent {
       error: (err) => {
         this.errorMessage = 'Registration failed. The email may already be in use.';
         console.error('Registration failed', err);
+        this.isLoading = false;
       },
       complete: () => {
         this.isLoading = false;

@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { BoardService } from '../../../core/services/board';
 import { Board } from '../../../models/board.model';
 import {
@@ -8,6 +8,7 @@ import {
   transferArrayItem,
   DragDropModule,
 } from '@angular/cdk/drag-drop';
+import { LucideAngularModule, Plus, Ellipsis, ArrowLeft, GripVertical, Edit, Trash2 } from 'lucide-angular';
 import { Task } from '../../../models/task.model';
 import { TaskReorder } from '../../../models/task-reorder.model';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
@@ -17,13 +18,14 @@ import { Dialog } from '@angular/cdk/dialog';
 import { TaskDetailModalComponent } from '../../tasks/task-detail-modal/task-detail-modal';
 import { TaskDialogResult } from '../../../models/task-dialog-result.model';
 import { FormControl } from '@angular/forms';
+import { CreateColumnModalComponent } from '../create-column-modal/create-column-modal';
 
 /**
  * Displays the details of a single board.
  */
 @Component({
   selector: 'app-board-detail',
-  imports: [DragDropModule, ReactiveFormsModule],
+  imports: [DragDropModule, ReactiveFormsModule, LucideAngularModule, RouterLink],
   templateUrl: './board-detail.html',
   styleUrl: './board-detail.scss',
 })
@@ -34,6 +36,16 @@ export class BoardDetailComponent {
   private readonly dialog = inject(Dialog);
   private readonly router = inject(Router);
 
+  readonly PlusIcon = Plus;
+  readonly MoreIcon = Ellipsis;
+  readonly ArrowLeftIcon = ArrowLeft;
+  readonly GripVerticalIcon = GripVertical;
+  readonly EditIcon = Edit;
+  readonly TrashIcon = Trash2;
+
+  // Holds a list of all column IDs for the CDK to connect the drop lists.
+  public columnIds: string[] = [];
+
   // --- Component state management ---
   board: Board | null = null;
   isLoading = true;
@@ -42,20 +54,18 @@ export class BoardDetailComponent {
   // A Map to store a FormGroup for each column, keyed by its column ID.
   newTaskForms = new Map<number, FormGroup>();
 
+  // Tracks which column's "Add Task" form is currently visible
+  addingTaskToColumnId: number | null = null;
+
+  // Tracks which column's action menu is currently open.
+  openColumnMenuId: number | null = null;
+
   // Initialize form control for title and set isEditingTitle flag for UI
   titleControl = new FormControl('', {
     nonNullable: true,
     validators: [Validators.maxLength(50)],
   });
   isEditingTitle = false;
-
-  // Form for adding a new column
-  addColumnForm = this.fb.group({
-    name: this.fb.control('', {
-      nonNullable: true,
-      validators: [Validators.required, Validators.maxLength(50)],
-    }),
-  });
 
   // Track which column is being edited and hold the temporary name
   editingColumnId: number | null = null;
@@ -75,6 +85,9 @@ export class BoardDetailComponent {
       this.boardService.getBoardById(+boardId).subscribe({
         next: (data) => {
           this.board = data;
+
+          // When the board loads, create the list of IDs 
+          this.columnIds = this.board.columns.map(c => c.id.toString());
 
           // After loading the board, create a form for each column.
           this.board.columns.forEach((column) => {
@@ -99,6 +112,26 @@ export class BoardDetailComponent {
       this.errorMessage = 'Board ID not found in URL.';
       this.isLoading = false;
     }
+  }
+
+  /**
+   * Toggles the action menu for a specific column.
+   * Stops event propagation to prevent the main click handler from closing it.
+   * @param event The mouse event that triggered the toggle.
+   * @param columnId The ID of the column to toggle the action menu for.
+   */
+  toggleColumnMenu(event: MouseEvent, columnId: number): void {
+    event.stopPropagation(); // Prevent the main click handler from closing it
+    this.openColumnMenuId = this.openColumnMenuId === columnId ? null : columnId;
+  }
+
+  /**
+   * Closes all open menus or forms.
+   * This is called by the main container's click event.
+   */
+  closeAllPopups(): void {
+    this.openColumnMenuId = null;
+    this.addingTaskToColumnId = null;
   }
 
   /**
@@ -159,6 +192,23 @@ export class BoardDetailComponent {
   }
 
   /**
+   * Shows the 'Add Task' form for a specific column.
+   * @param columnId The ID of the column to add the task to.
+   */
+  showAddTaskForm(columnId: number): void {
+    this.addingTaskToColumnId = columnId;
+  }
+
+  /**
+   * Hides the 'Add Task' form.
+   * @param columnId The ID of the column to cancel the task addition.
+   */
+  cancelAddTask(columnId: number): void {
+    this.addingTaskToColumnId = null;
+    this.newTaskForms.get(columnId)?.reset();
+  }
+
+  /**
    * Handles creating a new task in a specific column.
    * @param column The column where the new task will be added.
    */
@@ -180,6 +230,7 @@ export class BoardDetailComponent {
       next: (newTask) => {
         column.tasks.push(newTask);
         form.reset();
+        this.addingTaskToColumnId = null;
       },
       error: (err) => {
         console.error('Failed to create task', err);
@@ -315,34 +366,30 @@ export class BoardDetailComponent {
   }
 
   /**
-   * Creates a new column for the current board.
+   * Opens the CreateColumnModalComponent for creating a column.
    */
-  onAddColumn(): void {
-    if (!this.board || this.addColumnForm.invalid) return;
+  openCreateColumnModal(): void {
+    const dialogRef = this.dialog.open<string>(CreateColumnModalComponent, {
+      panelClass: 'custom-modal-panel',
+    });
 
-    const columnName = this.addColumnForm.value.name?.trim();
+    dialogRef.closed.subscribe((name) => {
+      if (name && this.board) {
+        this.boardService.createColumn(this.board.id, name).subscribe({
+          next: (newColumn) => {
+            newColumn.tasks = [];
+            this.board?.columns.push(newColumn);
 
-    if (!columnName) {
-      return;
-    }
-
-    this.boardService.createColumn(this.board.id, columnName).subscribe({
-      next: (newColumn) => {
-        // Optimistically add the new column to the UI
-        newColumn.tasks = [];
-        this.board?.columns.push(newColumn);
-
-        this.addColumnForm.reset();
-
-        // Initialize a new task form for this new column
-        this.newTaskForms.set(
-          newColumn.id,
-          this.fb.group({
-            title: ['', [Validators.required, Validators.maxLength(100)]],
-          })
-        );
-      },
-      error: (err) => console.error('Failed to create column', err),
+            this.newTaskForms.set(
+              newColumn.id,
+              this.fb.group({
+                title: ['', Validators.required],
+              })
+            );
+          },
+          error: (err) => console.error('Failed to create column', err),
+        });
+      }
     });
   }
 
@@ -352,6 +399,7 @@ export class BoardDetailComponent {
   startEditingColumn(column: Column): void {
     this.editingColumnId = column.id;
     this.editColumnNameControl.setValue(column.name);
+    this.openColumnMenuId = null;
   }
 
   /**
@@ -377,21 +425,22 @@ export class BoardDetailComponent {
     this.boardService.updateColumn(column.id, newName).subscribe({
       error: (err) => {
         console.error('Failed to update column name', err);
-        column.name = oldName; 
+        column.name = oldName;
       },
     });
   }
 
   /**
-   * Deletes a column.
+   * Deletes a column after confirmation.
    */
-  onDeleteColumn(columnId: number): void {
-    if (!confirm('Delete this column and all its tasks?')) return;
+  onDeleteColumn(column: Column): void {
+    this.openColumnMenuId = null; // Close the menu
+    if (!confirm(`Are you sure you want to delete "${column.name}" and all its tasks?`)) return;
 
-    this.boardService.deleteColumn(columnId).subscribe({
+    this.boardService.deleteColumn(column.id).subscribe({
       next: () => {
         if (this.board) {
-          this.board.columns = this.board.columns.filter((c) => c.id !== columnId);
+          this.board.columns = this.board.columns.filter((c) => c.id !== column.id);
         }
       },
       error: (err) => console.error('Failed to delete column', err),
