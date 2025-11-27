@@ -18,7 +18,7 @@ public class ColumnsController : ControllerBase
     {
         _columnRepository = columnRepository;
     }
-    
+
     /// <summary>
     /// Handles an HTTP POST request to create a new column within a board owned by the authenticated user.
     /// </summary>
@@ -88,7 +88,7 @@ public class ColumnsController : ControllerBase
 
         return Ok(updatedColumn);
     }
-    
+
     /// <summary>
     /// Handles an HTTP DELETE request to remove a column and all tasks within it, 
     /// provided the column belongs to the authenticated user.

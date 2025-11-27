@@ -20,7 +20,7 @@ public interface ITaskRepository
     /// Returns <c>false</c> when the task does not exist or the user is unauthorized.
     /// </returns>
     Task<bool> UpdateTaskColumnAsync(int taskId, int newColumnId, int userId);
-    
+
     /// <summary>
     /// Updates the positions of tasks within a specified column, ensuring that all
     /// affected tasks belong to the authenticated user. This method is typically used
@@ -36,7 +36,7 @@ public interface ITaskRepository
     /// (e.g., if any task does not belong to the specified column or user).
     /// </returns>
     Task<bool> UpdateTaskPositionsAsync(int columnId, IEnumerable<TaskReorderDto> tasksToReorder, int userId);
-    
+
     /// <summary>
     /// Creates a new task in the specified column for the authenticated user.
     /// Ensures that the user owns the column's parent board before inserting
@@ -49,7 +49,7 @@ public interface ITaskRepository
     /// does not have permission to add a task to the specified column.
     /// </returns>
     Task<Task?> CreateTaskAsync(Task task, int userId);
-    
+
     /// <summary>
     /// Updates an existing task for the authenticated user.
     /// Verifies that the user owns the board to which the task belongs
@@ -63,7 +63,7 @@ public interface ITaskRepository
     /// otherwise, <c>null</c> if the task does not exist or does not belong to the user.
     /// </returns>
     Task<Task?> UpdateTaskAsync(int taskId, TaskUpdateDto taskDto, int userId);
-    
+
     /// <summary>
     /// Deletes a task from the database if it belongs to the authenticated user.
     /// Ensures the user owns the board associated with the task before deletion.

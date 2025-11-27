@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TaskFlow.Api.DTOs;
 using TaskFlow.Api.Repository.IRepository;
-using Task =  TaskFlow.Api.Models.Task;
+using Task = TaskFlow.Api.Models.Task;
 
 namespace TaskFlow.Api.Controllers;
 
@@ -18,7 +18,7 @@ public class TasksController : ControllerBase
     {
         _taskRepository = taskRepository;
     }
-    
+
     /// <summary>
     /// Handles an HTTP PATCH request to move an existing task
     /// to a different column within a board owned by the authenticated user.
@@ -51,10 +51,10 @@ public class TasksController : ControllerBase
         {
             return NotFound("Task not found or you do not have permission to move it.");
         }
-        
+
         return NoContent();
     }
-    
+
     /// <summary>
     /// Handles an HTTP PATCH request to reorder tasks within a specific column.
     /// </summary>
@@ -97,9 +97,9 @@ public class TasksController : ControllerBase
             return NotFound("Column not found or you do not have permission to reorder these tasks.");
         }
 
-        return NoContent(); 
+        return NoContent();
     }
-    
+
     /// <summary>
     /// Handles HTTP POST requests to create a new task within a specific column.
     /// </summary>
@@ -144,12 +144,12 @@ public class TasksController : ControllerBase
         // 4. Handle forbidden action 403 — user tries to add a task to a column they don’t own.
         if (createdTask == null)
         {
-            return Forbid(); 
+            return Forbid();
         }
-        
+
         return Ok(createdTask);
     }
-    
+
     /// <summary>
     /// Handles HTTP PUT requests to update an existing task's title and description.
     /// Ensures that the authenticated user owns the board the task belongs to

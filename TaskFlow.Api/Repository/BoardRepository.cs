@@ -8,7 +8,7 @@ namespace TaskFlow.Api.Repository;
 /// <summary>
 /// Implements data access for the Board entity using Entity Framework Core.
 /// </summary>
-public class BoardRepository :  IBoardRepository
+public class BoardRepository : IBoardRepository
 {
     private readonly ApplicationDbContext _context;
 
@@ -16,17 +16,17 @@ public class BoardRepository :  IBoardRepository
     {
         _context = context;
     }
-    
+
     /// <inheritdoc />
     public async Task<IEnumerable<Board>> GetBoardsByUserIdAsync(int userId)
     {
         return await _context.Boards
             .Where(b => b.UserId == userId)
             .Include(b => b.Columns)
-            .OrderByDescending(b  => b.Id)
+            .OrderByDescending(b => b.Id)
             .ToListAsync();
     }
-    
+
     /// <inheritdoc />
     public async Task<Board?> GetBoardByIdAsync(int boardId, int userId)
     {
@@ -35,7 +35,7 @@ public class BoardRepository :  IBoardRepository
             .ThenInclude(c => c.Tasks.OrderBy(t => t.Position))
             .FirstOrDefaultAsync(b => b.Id == boardId && b.UserId == userId);
     }
-    
+
     /// <inheritdoc />
     public async Task<Board> CreateBoardAsync(Board board)
     {
@@ -47,7 +47,7 @@ public class BoardRepository :  IBoardRepository
         await _context.SaveChangesAsync();
         return board;
     }
-    
+
     /// <inheritdoc />
     public async Task<Board?> UpdateBoardAsync(int boardId, string newName, int userId)
     {
@@ -65,7 +65,7 @@ public class BoardRepository :  IBoardRepository
         await _context.SaveChangesAsync();
         return board;
     }
-    
+
     /// <inheritdoc />
     public async Task<bool> DeleteBoardAsync(int boardId, int userId)
     {

@@ -3,6 +3,7 @@ using TaskFlow.Api.Data;
 using TaskFlow.Api.DTOs;
 using TaskFlow.Api.Repository.IRepository;
 using Task = TaskFlow.Api.Models.Task;
+
 namespace TaskFlow.Api.Repository;
 
 /// <summary>
@@ -38,9 +39,10 @@ public class TaskRepository : ITaskRepository
         await _context.SaveChangesAsync();
         return true;
     }
-    
+
     /// <inheritdoc />
-    public async Task<bool> UpdateTaskPositionsAsync(int columnId, IEnumerable<TaskReorderDto> tasksToReorder, int userId)
+    public async Task<bool> UpdateTaskPositionsAsync(int columnId, IEnumerable<TaskReorderDto> tasksToReorder,
+        int userId)
     {
         // 1. Retrieve all tasks in the target column that belong to the user.
         var tasksInColumn = await _context.Tasks
@@ -52,7 +54,7 @@ public class TaskRepository : ITaskRepository
         if (!taskIdsToReorder.IsSubsetOf(tasksInColumn.Select(t => t.Id)))
         {
             // A task ID was provided that doesn't belong to this column/user.
-            return false; 
+            return false;
         }
 
         // 3. Update the position of each task in memory.
@@ -66,7 +68,7 @@ public class TaskRepository : ITaskRepository
         await _context.SaveChangesAsync();
         return true;
     }
-    
+
     /// <inheritdoc />
     public async Task<Task?> CreateTaskAsync(Task task, int userId)
     {
@@ -86,7 +88,7 @@ public class TaskRepository : ITaskRepository
             .Where(t => t.ColumnId == task.ColumnId)
             .DefaultIfEmpty()
             .MaxAsync(t => (int?)t.Position);
-            
+
         // If no tasks exist, start from 0; otherwise, increment by 1.
         task.Position = (maxPosition ?? -1) + 1;
 
@@ -95,7 +97,7 @@ public class TaskRepository : ITaskRepository
         await _context.SaveChangesAsync();
         return task;
     }
-    
+
     /// <inheritdoc />
     public async Task<Task?> UpdateTaskAsync(int taskId, TaskUpdateDto taskDto, int userId)
     {
@@ -104,7 +106,7 @@ public class TaskRepository : ITaskRepository
             .Include(t => t.Column)
             .ThenInclude(c => c.Board)
             .FirstOrDefaultAsync(t => t.Id == taskId && t.Column.Board.UserId == userId);
-        
+
         // If the task is not found or the user does not own the board, return null
         if (task == null)
         {
@@ -114,7 +116,7 @@ public class TaskRepository : ITaskRepository
         // 2. Apply updates from the DTO to the entity.
         task.Title = taskDto.Title;
         task.Description = taskDto.Description;
-        
+
         await _context.SaveChangesAsync();
         return task;
     }

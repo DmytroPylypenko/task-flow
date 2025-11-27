@@ -11,7 +11,7 @@ public interface IBoardRepository
     /// Gets all boards for a specific user.
     /// </summary>
     Task<IEnumerable<Board>> GetBoardsByUserIdAsync(int userId);
-    
+
     /// <summary>
     /// Gets a single board by its ID, ensuring it belongs to the specified user.
     /// </summary>
@@ -19,7 +19,7 @@ public interface IBoardRepository
     /// <param name="userId">The ID of the user who must own the board.</param>
     /// <returns>The Board object if found and ownership is verified; otherwise, null.</returns>
     Task<Board?> GetBoardByIdAsync(int boardId, int userId);
-    
+
     /// <summary>
     /// Adds a new board to the database for the specified user.
     /// Automatically creates the default columns (To Do, In Progress, Done).
@@ -27,7 +27,7 @@ public interface IBoardRepository
     /// <param name="board">The Board object to create.</param>
     /// <returns>The newly created Board object, including its generated ID.</returns>
     Task<Board> CreateBoardAsync(Board board);
-    
+
     /// <summary>
     /// Updates the name of a board owned by the specified user.
     /// </summary>
@@ -42,7 +42,7 @@ public interface IBoardRepository
     /// otherwise, <c>null</c>.
     /// </returns>
     Task<Board?> UpdateBoardAsync(int boardId, string newName, int userId);
-    
+
     /// <summary>
     /// Deletes a board owned by the specified user.
     /// </summary>
