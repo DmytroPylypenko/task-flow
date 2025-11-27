@@ -7,7 +7,7 @@ using Task = System.Threading.Tasks.Task;
 
 namespace TaskFlow.Api.Tests.Repository;
 
-public class UserRepositoryTests : IDisposable
+public class UserRepositoryTests
 {
     private readonly ApplicationDbContext _context;
     private readonly UserRepository _sut;
@@ -17,11 +17,6 @@ public class UserRepositoryTests : IDisposable
         // Create a new, clean in-memory database for each test
         _context = DbContextFactory.Create();
         _sut = new UserRepository(_context);
-    }
-
-    public void Dispose()
-    {
-        _context.Dispose();
     }
     
     [Fact]
