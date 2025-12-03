@@ -1,0 +1,41 @@
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: taskflow-db
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=StrongDevPass123!
+    ports:
+      - "1433:1433"
+    volumes:
+      - db_data:/var/opt/mssql
+
+  api:
+    build:
+      context: .
+      dockerfile: TaskFlow.Api/Dockerfile
+    container_name: taskflow-api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=db;Database=TaskFlowDb;User Id=sa;Password=StrongDevPass123!;TrustServerCertificate=True
+      - JwtSettings__Key=SuperSecretDevelopmentKey123456!
+      - JwtSettings__Issuer=http://api:8080
+      - JwtSettings__Audience=http://api:8080
+    ports:
+      - "7264:8080"
+    depends_on:
+      - db
+
+  web:
+    build:
+      context: TaskFlow.Web
+      dockerfile: Dockerfile
+    container_name: taskflow-web
+    ports:
+      - "4200:80"
+    depends_on:
+      - api
+
+volumes:
+  db_data:
+
