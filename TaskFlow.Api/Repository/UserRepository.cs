@@ -21,7 +21,7 @@ public class UserRepository : IUserRepository
     /// <inheritdoc />
     public Task<bool> UserExistsAsync(string email)
     {
-        return _context.Users.AnyAsync(u => u.Email == email);
+        return _context.Users.AnyAsync(u => u.Email.ToLower() == email.ToLower());
     }
 
     /// <inheritdoc />
@@ -34,6 +34,6 @@ public class UserRepository : IUserRepository
     /// <inheritdoc />
     public Task<User?> FindUserByEmailAsync(string email)
     {
-        return _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+        return _context.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower());
     }
 }
