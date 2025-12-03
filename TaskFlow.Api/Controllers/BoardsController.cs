@@ -15,7 +15,7 @@ namespace TaskFlow.Api.Controllers;
 [Authorize]
 public class BoardsController : ControllerBase
 {
-    private readonly IBoardRepository  _boardRepository;
+    private readonly IBoardRepository _boardRepository;
 
     public BoardsController(IBoardRepository boardRepository)
     {
@@ -40,13 +40,13 @@ public class BoardsController : ControllerBase
         {
             return BadRequest("Invalid user ID.");
         }
-        
+
         // 3. Get boards from repository
         var boards = await _boardRepository.GetBoardsByUserIdAsync(parsedUserId);
-        
+
         return Ok(boards);
     }
-    
+
     /// <summary>
     /// Gets a single board by its ID, including its columns and tasks.
     /// </summary>
@@ -56,13 +56,13 @@ public class BoardsController : ControllerBase
     {
         // 1. Get user ID from claims
         string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        
+
         // 2. Safely parse user ID
         if (!int.TryParse(userId, out var parsedUserId))
         {
             return Unauthorized();
         }
-        
+
         // 3. Get a board from repository
         var board = await _boardRepository.GetBoardByIdAsync(id, parsedUserId);
 
@@ -74,7 +74,7 @@ public class BoardsController : ControllerBase
 
         return Ok(board);
     }
-    
+
     /// <summary>
     /// Creates a new board for the authenticated user.
     /// </summary>
@@ -85,7 +85,7 @@ public class BoardsController : ControllerBase
     {
         // 1. Get user ID from claims
         string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        
+
         // 2. Safely parse user ID
         if (!int.TryParse(userId, out var parsedUserId))
         {
@@ -105,7 +105,7 @@ public class BoardsController : ControllerBase
         // 5. Return a 201 Created response with a Location header.
         return CreatedAtAction(nameof(GetBoard), new { id = createdBoard.Id }, createdBoard);
     }
-    
+
     /// <summary>
     /// Handles HTTP PUT requests to update the name of an existing board owned by the authenticated user.
     /// </summary>
@@ -137,7 +137,7 @@ public class BoardsController : ControllerBase
 
         return Ok(updatedBoard);
     }
-    
+
     /// <summary>
     /// Deletes a board owned by the authenticated user.
     /// </summary>
@@ -166,6 +166,6 @@ public class BoardsController : ControllerBase
             return NotFound("Board not found or you do not have permission to delete it.");
         }
 
-        return NoContent(); 
+        return NoContent();
     }
 }

@@ -14,7 +14,7 @@ public class ColumnRepository : IColumnRepository
     {
         _context = context;
     }
-    
+
     /// <inheritdoc />
     public async Task<Column?> CreateColumnAsync(Column column, int userId)
     {

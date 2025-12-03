@@ -12,7 +12,7 @@ public interface IPasswordHasher
     /// <param name="password">The password string to hash.</param>
     /// <returns>A string containing the salt and hash, separated by a delimiter.</returns>
     string Hash(string password);
-    
+
     /// <summary>
     /// Verifies a plain-text password against a stored password hash.
     /// </summary>

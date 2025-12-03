@@ -20,18 +20,13 @@ public class AuthController : ControllerBase
     private readonly IPasswordHasher _passwordHasher;
     private readonly ITokenService _tokenService;
     
-    /// <summary>
-    /// Initializes a new instance of the AuthController.
-    /// </summary>
-    /// <param name="context">The database context for user operations.</param>
-    /// <param name="passwordHasher">The service used for hashing and verifying passwords.</param>
     public AuthController(IUserRepository userRepository, IPasswordHasher passwordHasher, ITokenService tokenService)
     {
         _userRepository = userRepository;
         _passwordHasher = passwordHasher;
         _tokenService = tokenService;
     }
-    
+
     /// <summary>
     /// Registers a new user account.
     /// </summary>
@@ -63,7 +58,7 @@ public class AuthController : ControllerBase
         // Return a success response
         return StatusCode(201, new { Message = "User registered successfully." });
     }
-    
+
     /// <summary>
     /// Authenticates a user and returns a JWT.
     /// </summary>

@@ -18,7 +18,7 @@ public interface IColumnRepository
     /// otherwise, <c>null</c>.
     /// </returns>
     Task<Column?> CreateColumnAsync(Column column, int userId);
-    
+
     /// <summary>
     /// Updates the name of an existing column owned by the authenticated user.
     /// </summary>
@@ -33,7 +33,7 @@ public interface IColumnRepository
     /// otherwise, <c>null</c>.
     /// </returns>
     Task<Column?> UpdateColumnAsync(int columnId, ColumnUpdateDto columnDto, int userId);
-    
+
     /// <summary>
     /// Deletes a column belonging to a board owned by the authenticated user.
     /// </summary>
