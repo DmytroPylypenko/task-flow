@@ -22,10 +22,10 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Restore dependencies
-        run: dotnet restore TaskFlow.Api/TaskFlow.Api.sln
+        run: dotnet restore TaskFlow.Api.sln
 
       - name: Build solution
-        run: dotnet build TaskFlow.Api/TaskFlow.Api.sln --configuration Release --no-restore
+        run: dotnet build TaskFlow.Api.sln --configuration Release --no-restore
 
       - name: Run tests
         run: dotnet test TaskFlow.Api.Tests/TaskFlow.Api.Tests.csproj --configuration Release --no-build --logger trx
