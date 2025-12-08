@@ -68,12 +68,13 @@ jobs:
         run: dotnet build TaskFlow.Api.sln --configuration Release --no-restore
 
       - name: Run tests with coverage
-        run: dotnet test TaskFlow.Api.Tests/TaskFlow.Api.Tests.csproj \
-             --configuration Release \
-             --no-build \
-             /p:CollectCoverage=true \
-             /p:CoverletOutput=TestResults/Coverage/ \
-             /p:CoverletOutputFormat=cobertura
+        run: |
+           dotnet test TaskFlow.Api.Tests/TaskFlow.Api.Tests.csproj \
+            --configuration Release \
+            --no-build \
+            /p:CollectCoverage=true \
+            /p:CoverletOutput=TestResults/Coverage/ \
+            /p:CoverletOutputFormat=cobertura
 
       - name: Install ReportGenerator
         run: dotnet tool install -g dotnet-reportgenerator-globaltool
