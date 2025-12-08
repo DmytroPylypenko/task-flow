@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environments';
 import { UserLogin, UserRegister } from '../../models/user-credentials.model';
 import { AuthToken } from '../../models/token.model';
+import { RegisterResponse } from '../../models/register-response.model';
 
 /**
  * AuthService class provides methods for user authentication.
@@ -20,8 +21,8 @@ export class AuthService {
    * Sends a registration request to the API.
    * @param userRegisterData The user's registration details.
    */
-  register(userRegisterData: UserRegister): Observable<any> {
-    return this.http.post(`${this.apiUrl}/register`, userRegisterData);
+  register(userRegisterData: UserRegister): Observable<RegisterResponse> {
+    return this.http.post<RegisterResponse>(`${this.apiUrl}/register`, userRegisterData);
   }
 
   /**

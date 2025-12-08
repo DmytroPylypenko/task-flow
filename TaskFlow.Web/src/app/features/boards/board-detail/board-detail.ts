@@ -19,7 +19,7 @@ import { TaskDetailModalComponent } from '../../tasks/task-detail-modal/task-det
 import { TaskDialogResult } from '../../../models/task-dialog-result.model';
 import { FormControl } from '@angular/forms';
 import { CreateColumnModalComponent } from '../create-column-modal/create-column-modal';
-
+import { OnInit } from '@angular/core';
 /**
  * Displays the details of a single board.
  */
@@ -29,7 +29,7 @@ import { CreateColumnModalComponent } from '../create-column-modal/create-column
   templateUrl: './board-detail.html',
   styleUrl: './board-detail.scss',
 })
-export class BoardDetailComponent {
+export class BoardDetailComponent implements OnInit {
   private readonly boardService = inject(BoardService);
   private readonly route = inject(ActivatedRoute);
   private readonly fb = inject(FormBuilder);

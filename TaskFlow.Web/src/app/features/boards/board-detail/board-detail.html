@@ -1,4 +1,11 @@
-<div class="p-8" (click)="closeAllPopups()">
+<div
+  class="p-8"
+  role="button"
+  tabindex="0"
+  aria-label="Close popups"
+  (click)="closeAllPopups()"
+  (keydown.enter)="closeAllPopups()"
+>
   <div class="mb-4 flex items-center justify-between border-b border-white/5 pb-8">
     <div class="flex items-center gap-4">
       <a
@@ -37,7 +44,11 @@
       @for (column of board.columns; track column.id) {
       <div
         class="flex-shrink-0 w-80 bg-dark-900/40 rounded-2xl p-5 border border-white/5"
+        role="button"
+        tabindex="0"
+        aria-label="Column container"
         (click)="$event.stopPropagation()"
+        (keydown.enter)="$event.stopPropagation()"
       >
         <div class="mb-5 flex items-center justify-between">
           <div class="flex items-center gap-2.5">
@@ -47,7 +58,6 @@
               [formControl]="editColumnNameControl"
               (keyup.enter)="onUpdateColumnName(column)"
               (blur)="onUpdateColumnName(column)"
-              autofocus
             />
             } @else {
             <h3 class="text-white font-medium cursor-default">
@@ -114,7 +124,6 @@
                 formControlName="title"
                 placeholder="Enter task title..."
                 class="w-full bg-dark-950 border border-dark-800 text-white placeholder:text-gray-500 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg h-10 px-3 transition-all outline-none text-sm"
-                autofocus
               />
               <div class="flex gap-2 mt-3">
                 <button
@@ -136,7 +145,11 @@
           </li>
           } @for (task of column.tasks; track task.id) {
           <li
+            role="button"
+            tabindex="0"
+            aria-label="Open task"
             (click)="openTaskModal(task)"
+            (keydown.enter)="openTaskModal(task)"
             cdkDrag
             class="w-full p-4 bg-dark-900 border border-white/5 hover:border-primary/70 cursor-pointer transition-all duration-200 shadow-md hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-1 group rounded-xl"
           >
