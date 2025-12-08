@@ -92,7 +92,7 @@ jobs:
             "-reports:TaskFlow.Api.Tests/TestResults/Coverage/coverage.cobertura.xml" \
             "-targetdir:temp-coverage" \
             "-reporttypes:TextSummary" | \
-            grep -oP 'Line coverage:\s*\K[0-9.]+' )
+            grep -oP 'Line:\s*\K[0-9.]+' )
 
           echo "Line coverage = $LINE_COVERAGE%"
 
