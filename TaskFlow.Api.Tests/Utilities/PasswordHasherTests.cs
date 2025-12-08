@@ -39,7 +39,7 @@ public class PasswordHasherTests
         // Assert
         hash1.Should().NotBe(hash2);
     }
-    
+
     [Fact]
     public void Verify_WhenPasswordIsCorrect_ShouldReturnTrue()
     {
@@ -82,7 +82,7 @@ public class PasswordHasherTests
         hash.Should().NotBeNullOrEmpty();
         hash.Should().Contain(":");
     }
-    
+
     [Fact]
     public void Verify_WhenPasswordIsEmpty_ShouldReturnTrueIfMatchesHash()
     {
@@ -96,7 +96,7 @@ public class PasswordHasherTests
         // Assert
         result.Should().BeTrue();
     }
-    
+
     [Fact]
     public void Hash_ShouldCompleteWithinReasonableTime()
     {

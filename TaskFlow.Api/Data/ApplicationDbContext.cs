@@ -10,7 +10,7 @@ public class ApplicationDbContext : DbContext
         : base(options)
     {
     }
-    
+
     public DbSet<User> Users { get; set; }
     public DbSet<Board> Boards { get; set; }
     public DbSet<Column> Columns { get; set; }

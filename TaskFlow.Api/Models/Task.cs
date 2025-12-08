@@ -15,9 +15,9 @@ public class Task
     public string? Description { get; set; }
 
     public int Position { get; set; }
-    
+
     public int ColumnId { get; set; }
-    
+
     [JsonIgnore]
     public Column? Column { get; set; }
 }

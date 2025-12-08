@@ -33,12 +33,12 @@ public class Program
             options.AddPolicy("FrontendCorsPolicy", policy =>
             {
                 // Allow requests from Angular app's origin
-                policy.WithOrigins("http://localhost:4200") 
+                policy.WithOrigins("http://localhost:4200")
                     .AllowAnyHeader()
                     .AllowAnyMethod();
             });
         });
-        
+
         // Add and configure JWT Authentication
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
@@ -54,7 +54,7 @@ public class Program
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Key"]!))
                 };
             });
-        
+
         builder.Services.AddControllers();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
@@ -68,7 +68,7 @@ public class Program
             db.Database.Migrate();
         }
 
-        
+
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
@@ -77,9 +77,9 @@ public class Program
         }
 
         app.UseHttpsRedirection();
-        
+
         app.UseCors("FrontendCorsPolicy");
-        
+
         app.UseAuthentication();
         app.UseAuthorization();
 
