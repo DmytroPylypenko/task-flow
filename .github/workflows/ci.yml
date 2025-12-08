@@ -86,6 +86,26 @@ jobs:
             "-targetdir:CoverageReport" \
             "-reporttypes:Html;Cobertura"
 
+      - name: Enforce minimum coverage (30%)
+        run: |
+          LINE_COVERAGE=$(reportgenerator \
+            "-reports:TaskFlow.Api.Tests/TestResults/Coverage/coverage.cobertura.xml" \
+            "-targetdir:temp-coverage" \
+            "-reporttypes:TextSummary" | \
+            grep -oP 'Line coverage:\s*\K[0-9.]+' )
+
+          echo "Line coverage = $LINE_COVERAGE%"
+
+          REQUIRED=30
+          COVERAGE_INT=${LINE_COVERAGE%.*}
+
+          if [ "$COVERAGE_INT" -lt "$REQUIRED" ]; then
+            echo "Coverage ($COVERAGE_INT%) is below required $REQUIRED%"
+            exit 1
+          fi
+
+          echo "Coverage check passed!"
+
       - name: Upload Coverage Report Artifact
         uses: actions/upload-artifact@v4
         with:
