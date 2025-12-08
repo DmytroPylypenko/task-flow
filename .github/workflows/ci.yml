@@ -84,7 +84,7 @@ jobs:
           reportgenerator \
             "-reports:TaskFlow.Api.Tests/TestResults/Coverage/coverage.cobertura.xml" \
             "-targetdir:CoverageReport" \
-            -reporttypes:Html;Cobertura
+            "-reporttypes:Html;Cobertura"
 
       - name: Upload Coverage Report Artifact
         uses: actions/upload-artifact@v4
