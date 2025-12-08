@@ -34,7 +34,7 @@ public class ColumnRepository : IColumnRepository
         // 1. Retrieve the column and ensure the user owns the board it belongs to.
         var column = await _context.Columns
             .Include(c => c.Board)
-            .FirstOrDefaultAsync(c => c.Id == columnId && c.Board.UserId == userId);
+            .FirstOrDefaultAsync(c => c.Id == columnId && c.Board != null && c.Board.UserId == userId);
 
         if (column == null) return null;
 
@@ -50,7 +50,7 @@ public class ColumnRepository : IColumnRepository
         // 1. Retrieve the column and ensure the user owns the board it belongs to.
         var column = await _context.Columns
             .Include(c => c.Board)
-            .FirstOrDefaultAsync(c => c.Id == columnId && c.Board.UserId == userId);
+            .FirstOrDefaultAsync(c => c.Id == columnId && c.Board != null && c.Board.UserId == userId);
 
         if (column == null) return false;
 
