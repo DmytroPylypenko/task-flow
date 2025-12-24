@@ -1,0 +1,39 @@
+name: CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Login to ACR
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ secrets.ACR_LOGIN_SERVER }}
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+
+      # Build and Push API
+      - name: Build & Push API
+        run: |
+          docker build \
+            --build-arg DOTNET_ENVIRONMENT=Production \
+            -t ${{ secrets.ACR_LOGIN_SERVER }}/taskflow-api:latest \
+            -t ${{ secrets.ACR_LOGIN_SERVER }}/taskflow-api:${{ github.sha }} \
+            -f TaskFlow.Api/Dockerfile .
+          docker push ${{ secrets.ACR_LOGIN_SERVER }}/taskflow-api --all-tags
+
+      # Build and Push Web
+      - name: Build & Push Web
+        run: |
+          docker build \
+            --build-arg API_BASE_URL=${{ secrets.API_BASE_URL_PROD }} \
+            -t ${{ secrets.ACR_LOGIN_SERVER }}/taskflow-web:latest \
+            -t ${{ secrets.ACR_LOGIN_SERVER }}/taskflow-web:${{ github.sha }} \
+            -f TaskFlow.Web/Dockerfile TaskFlow.Web
+          docker push ${{ secrets.ACR_LOGIN_SERVER }}/taskflow-web --all-tags
