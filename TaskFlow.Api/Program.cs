@@ -61,7 +61,7 @@ public class Program
         builder.Services.AddSwaggerGen();
 
         builder.Services.AddHealthChecks();
-        
+
         var app = builder.Build();
 
         if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
@@ -70,7 +70,6 @@ public class Program
             var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             db.Database.Migrate();
         }
-
 
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
