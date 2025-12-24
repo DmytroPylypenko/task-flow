@@ -4,6 +4,10 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
+# Allow passing environment as build-arg
+ARG DOTNET_ENVIRONMENT=Production
+ENV DOTNET_ENVIRONMENT=${DOTNET_ENVIRONMENT}
+
 # Copy project and restore dependencies
 COPY TaskFlow.Api/*.csproj ./ 
 RUN dotnet restore
@@ -33,8 +37,8 @@ ENV DOTNET_NOLOGO=true
 EXPOSE 8080
 
 # Health check for Docker / Azure
-#HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
-#  CMD curl -f http://localhost:8080/health || exit 1
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD curl -f http://localhost:8080/health || exit 1
   
 # Run the API
 ENTRYPOINT ["dotnet", "TaskFlow.Api.dll"]

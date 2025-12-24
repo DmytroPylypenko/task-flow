@@ -12,6 +12,11 @@ RUN npm ci
 # Copy all source code
 COPY . .
 
+# Accept API_BASE_URL as a build argument
+ARG API_BASE_URL
+# Overwrite environment.prod.ts with real API URL
+RUN echo "export const environment = { production: true, apiBaseUrl: '$API_BASE_URL' };" > src/environments/environment.prod.ts
+
 # Build production Angular app
 RUN npm run build -- --configuration production
 

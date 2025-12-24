@@ -60,9 +60,11 @@ public class Program
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
 
+        builder.Services.AddHealthChecks();
+        
         var app = builder.Build();
 
-        if (app.Environment.IsDevelopment())
+        if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
         {
             using var scope = app.Services.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
@@ -79,6 +81,7 @@ public class Program
 
         app.UseHttpsRedirection();
 
+        app.MapHealthChecks("/health");
         app.UseCors("FrontendCorsPolicy");
 
         app.UseAuthentication();

@@ -1,0 +1,63 @@
+version: "3.9"
+
+services:
+  sql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: taskflow-sql
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - sql-data:/var/opt/mssql
+    networks:
+      - app-network
+
+  api:
+    image: taskflow-api:latest
+    build:
+      context: .
+      dockerfile: TaskFlow.Api/Dockerfile
+      args:
+        DOTNET_ENVIRONMENT: Production
+    container_name: taskflow-api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=${DB_CONNECTION_STRING}
+      - JwtSettings__Key=${JWT_SECRET}
+      - JwtSettings__Issuer=${JWT_ISSUER}
+      - JwtSettings__Audience=${JWT_AUDIENCE}
+    ports:
+      - "5000:8080"
+    depends_on:
+      - sql
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  web:
+    image: taskflow-web:latest
+    build:
+      context: TaskFlow.Web
+      dockerfile: Dockerfile
+      args:
+        API_BASE_URL: ${API_BASE_URL}
+    container_name: taskflow-web
+    environment:
+      - API_BASE_URL=${API_BASE_URL}
+    ports:
+      - "8081:80"
+    depends_on:
+      - api
+    networks:
+      - app-network
+
+volumes:
+  sql-data:
+
+networks:
+  app-network:
+    driver: bridge
