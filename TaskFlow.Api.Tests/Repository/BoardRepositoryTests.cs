@@ -24,7 +24,7 @@ public class BoardRepositoryTests
     public async Task CreateBoardAsync_WhenCalled_ShouldAddBoardAndDefaultColumns()
     {
         // Arrange
-        var board = new Board { Name = "New Project", UserId = 100};
+        var board = new Board { Name = "New Project", UserId = 100 };
 
         // Act
         var result = await _sut.CreateBoardAsync(board);
@@ -37,7 +37,7 @@ public class BoardRepositoryTests
         var boardInDb = await _context.Boards
             .Include(b => b.Columns)
             .FirstOrDefaultAsync(b => b.Id == result.Id);
-        
+
         boardInDb.Should().NotBeNull();
         boardInDb.Name.Should().Be("New Project");
 
@@ -81,7 +81,7 @@ public class BoardRepositoryTests
         // Assert
         result.Should().BeEmpty();
     }
-    
+
     [Fact]
     public async Task GetBoardByIdAsync_WhenUserOwnsBoard_ShouldReturnBoard()
     {
@@ -113,7 +113,7 @@ public class BoardRepositoryTests
         var result = await _sut.GetBoardByIdAsync(board.Id, userId);
 
         // Assert
-        result.Should().BeNull(); 
+        result.Should().BeNull();
     }
 
     [Fact]
@@ -145,7 +145,7 @@ public class BoardRepositoryTests
         // Assert
         result.Should().BeNull();
     }
-    
+
     [Fact]
     public async Task DeleteBoardAsync_WhenUserOwnsBoard_ShouldRemoveBoard()
     {

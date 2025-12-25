@@ -47,7 +47,7 @@ public class AuthControllerTests
 
         // Assert
         var bad = result.Should().BeOfType<BadRequestObjectResult>().Subject;
-        
+
         var message = bad.Value!.GetType()
             .GetProperty("Message")!
             .GetValue(bad.Value);
@@ -81,7 +81,7 @@ public class AuthControllerTests
         // Assert
         var created = result.Should().BeOfType<ObjectResult>().Subject;
         created.StatusCode.Should().Be(201);
-        
+
         var message = created.Value!.GetType()
             .GetProperty("Message")!
             .GetValue(created.Value);
@@ -109,7 +109,7 @@ public class AuthControllerTests
 
         // Assert
         var unauthorized = result.Should().BeOfType<UnauthorizedObjectResult>().Subject;
-        
+
         var message = unauthorized.Value!.GetType()
             .GetProperty("Message")!
             .GetValue(unauthorized.Value);
@@ -138,7 +138,7 @@ public class AuthControllerTests
 
         // Assert
         var unauthorized = result.Should().BeOfType<UnauthorizedObjectResult>().Subject;
-        
+
         var message = unauthorized.Value!.GetType()
             .GetProperty("Message")!
             .GetValue(unauthorized.Value);
@@ -170,7 +170,7 @@ public class AuthControllerTests
 
         // Assert
         var ok = result.Should().BeOfType<OkObjectResult>().Subject;
-        
+
         var token = ok.Value!.GetType()
             .GetProperty("Token")!
             .GetValue(ok.Value) as string;

@@ -7,6 +7,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { LayoutDashboard, LucideAngularModule, Plus } from 'lucide-angular';
 import { Dialog } from '@angular/cdk/dialog';
 import { CreateBoardModalComponent } from '../create-board-modal/create-board-modal';
+import { OnInit } from '@angular/core';
 
 /**
  * Displays a list of the user's boards.
@@ -17,7 +18,7 @@ import { CreateBoardModalComponent } from '../create-board-modal/create-board-mo
   templateUrl: './board-list.html',
   styleUrl: './board-list.scss',
 })
-export class BoardListComponent {
+export class BoardListComponent implements OnInit {
   private readonly boardService = inject(BoardService);
   private readonly fb = inject(FormBuilder);
   private readonly dialog = inject(Dialog);

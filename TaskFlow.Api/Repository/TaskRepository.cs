@@ -25,8 +25,9 @@ public class TaskRepository : ITaskRepository
         // This is a critical security check to prevent users from moving tasks they don't own.
         var task = await _context.Tasks
             .Include(t => t.Column)
-            .ThenInclude(c => c.Board)
-            .FirstOrDefaultAsync(t => t.Id == taskId && t.Column.Board.UserId == userId);
+            .ThenInclude(c => c!.Board)
+            .FirstOrDefaultAsync(t =>
+                t.Id == taskId && t.Column != null && t.Column.Board != null && t.Column.Board.UserId == userId);
 
         // Task not found.
         if (task == null)
@@ -46,11 +47,13 @@ public class TaskRepository : ITaskRepository
     {
         // 1. Retrieve all tasks in the target column that belong to the user.
         var tasksInColumn = await _context.Tasks
-            .Where(t => t.ColumnId == columnId && t.Column.Board.UserId == userId)
+            .Where(t => t.ColumnId == columnId && t.Column != null && t.Column.Board != null &&
+                        t.Column.Board.UserId == userId)
             .ToListAsync();
 
         // 2. Verify that all tasks to be reordered exist in this column.
-        var taskIdsToReorder = tasksToReorder.Select(t => t.TaskId).ToHashSet();
+        var reorderList = tasksToReorder.ToList();
+        var taskIdsToReorder = reorderList.Select(t => t.TaskId).ToHashSet();
         if (!taskIdsToReorder.IsSubsetOf(tasksInColumn.Select(t => t.Id)))
         {
             // A task ID was provided that doesn't belong to this column/user.
@@ -58,7 +61,7 @@ public class TaskRepository : ITaskRepository
         }
 
         // 3. Update the position of each task in memory.
-        foreach (TaskReorderDto taskDto in tasksToReorder)
+        foreach (TaskReorderDto taskDto in reorderList)
         {
             Task taskToUpdate = tasksInColumn.First(t => t.Id == taskDto.TaskId);
             taskToUpdate.Position = taskDto.NewPosition;
@@ -75,7 +78,7 @@ public class TaskRepository : ITaskRepository
         // 1. Security Check: Verify the user owns the board the column belongs to.
         var column = await _context.Columns
             .Include(c => c.Board)
-            .FirstOrDefaultAsync(c => c.Id == task.ColumnId && c.Board.UserId == userId);
+            .FirstOrDefaultAsync(c => c.Id == task.ColumnId && c.Board != null && c.Board.UserId == userId);
 
         // If the user does not own the column, deny the operation.
         if (column == null)
@@ -87,7 +90,7 @@ public class TaskRepository : ITaskRepository
         var maxPosition = await _context.Tasks
             .Where(t => t.ColumnId == task.ColumnId)
             .DefaultIfEmpty()
-            .MaxAsync(t => (int?)t.Position);
+            .MaxAsync(t => (int?)t!.Position);
 
         // If no tasks exist, start from 0; otherwise, increment by 1.
         task.Position = (maxPosition ?? -1) + 1;
@@ -104,8 +107,9 @@ public class TaskRepository : ITaskRepository
         // 1. Find the task and verify the user owns the board it belongs to.
         var task = await _context.Tasks
             .Include(t => t.Column)
-            .ThenInclude(c => c.Board)
-            .FirstOrDefaultAsync(t => t.Id == taskId && t.Column.Board.UserId == userId);
+            .ThenInclude(c => c!.Board)
+            .FirstOrDefaultAsync(t =>
+                t.Id == taskId && t.Column != null && t.Column.Board != null && t.Column.Board.UserId == userId);
 
         // If the task is not found or the user does not own the board, return null
         if (task == null)
@@ -127,8 +131,9 @@ public class TaskRepository : ITaskRepository
         // 1. Find the task and verify the user owns the board it belongs to.
         var task = await _context.Tasks
             .Include(t => t.Column)
-            .ThenInclude(c => c.Board)
-            .FirstOrDefaultAsync(t => t.Id == taskId && t.Column.Board.UserId == userId);
+            .ThenInclude(c => c!.Board)
+            .FirstOrDefaultAsync(t =>
+                t.Id == taskId && t.Column != null && t.Column.Board != null && t.Column.Board.UserId == userId);
 
         // If the task is not found or the user does not own the board, return null
         if (task == null)

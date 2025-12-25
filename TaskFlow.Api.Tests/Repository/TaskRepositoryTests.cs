@@ -21,7 +21,7 @@ public class TaskRepositoryTests
         _context = DbContextFactory.Create();
         _sut = new TaskRepository(_context);
     }
-    
+
     // -----------------------------
     // Helpers
     // -----------------------------
@@ -168,7 +168,7 @@ public class TaskRepositoryTests
         // Arrange
         var userId = 100;
         var col = await CreateColumnAsync(userId);
-        await CreateTaskAsync(col.Id, 0); 
+        await CreateTaskAsync(col.Id, 0);
 
         var newTask = new TaskModel
         {

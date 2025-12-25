@@ -19,7 +19,7 @@ public class AuthController : ControllerBase
     private readonly IUserRepository _userRepository;
     private readonly IPasswordHasher _passwordHasher;
     private readonly ITokenService _tokenService;
-    
+
     public AuthController(IUserRepository userRepository, IPasswordHasher passwordHasher, ITokenService tokenService)
     {
         _userRepository = userRepository;

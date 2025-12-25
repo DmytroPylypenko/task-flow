@@ -8,6 +8,7 @@ obj/
 *.user
 *.userosscache
 appsettings.Development.json
+.env
 
 # Node.js / Angular / VS Code Section
 # Ignores dependencies, build outputs, and local cache.

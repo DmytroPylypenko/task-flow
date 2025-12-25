@@ -92,7 +92,7 @@ public class TokenServiceTests
         decodedToken.Issuer.Should().Be("https://test-issuer.com");
         decodedToken.Audiences.First().Should().Be("https://test-audience.com");
     }
-    
+
     [Fact]
     public void CreateToken_ShouldSetExpirationAndAlgorithmCorrectly()
     {
@@ -107,7 +107,7 @@ public class TokenServiceTests
         decodedToken.ValidTo.Should().BeCloseTo(DateTime.UtcNow.AddDays(7), TimeSpan.FromMinutes(1));
         decodedToken.SignatureAlgorithm.Should().Be(SecurityAlgorithms.HmacSha256);
     }
-    
+
     [Fact]
     public void Constructor_WhenJwtKeyIsMissing_ShouldThrow()
     {
@@ -120,14 +120,14 @@ public class TokenServiceTests
                 // Missing Key
             }!)
             .Build();
-    
+
         // Act
         Action act = () => new TokenService(config);
-    
+
         // Assert
         act.Should().Throw<ArgumentNullException>();
     }
-    
+
     [Fact]
     public void CreateToken_WhenUserIsNull_ShouldThrow()
     {

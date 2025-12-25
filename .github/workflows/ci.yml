@@ -7,34 +7,34 @@ on:
   pull_request:
     branches:
       - main
-
-codeql:
-  runs-on: ubuntu-latest
-
-  permissions:
-    actions: read
-    contents: read
-    security-events: write
-
-  strategy:
-    fail-fast: false
-
-  steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v2
-      with:
-        languages: dotnet
-
-    - name: Autobuild
-      uses: github/codeql-action/autobuild@v2
-
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v2
       
 jobs:
+  codeql:
+    runs-on: ubuntu-latest
+
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    strategy:
+      fail-fast: false
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: csharp
+ 
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v4
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v4
+      
   backend-tests:
     runs-on: ubuntu-latest
 
@@ -67,8 +67,46 @@ jobs:
       - name: Build solution
         run: dotnet build TaskFlow.Api.sln --configuration Release --no-restore
 
-      - name: Run tests
-        run: dotnet test TaskFlow.Api.Tests/TaskFlow.Api.Tests.csproj --configuration Release --no-build --logger trx
+      - name: Run tests with coverage
+        run: |
+           dotnet test TaskFlow.Api.Tests/TaskFlow.Api.Tests.csproj \
+            --configuration Release \
+            --no-build \
+            /p:CollectCoverage=true \
+            /p:CoverletOutput=TestResults/Coverage/ \
+            /p:CoverletOutputFormat=cobertura
+
+      - name: Install ReportGenerator
+        run: dotnet tool install -g dotnet-reportgenerator-globaltool
+
+      - name: Generate Coverage Report (HTML + Cobertura)
+        run: |
+          reportgenerator \
+            "-reports:TaskFlow.Api.Tests/TestResults/Coverage/coverage.cobertura.xml" \
+            "-targetdir:CoverageReport" \
+            "-reporttypes:Html;Cobertura"
+
+      - name: Enforce minimum coverage (30%)
+        run: |
+          RAW_RATE=$(grep -oP 'line-rate="\K[0-9.]+' TaskFlow.Api.Tests/TestResults/Coverage/coverage.cobertura.xml)
+          LINE_COVERAGE=$(awk "BEGIN { printf \"%.0f\", $RAW_RATE * 100 }")
+
+          echo "Line coverage = $LINE_COVERAGE%"
+
+          REQUIRED=30
+
+          if [ "$COVERAGE_INT" -lt "$REQUIRED" ]; then
+            echo "Coverage ($LINE_COVERAGE%) is below required $REQUIRED%"
+            exit 1
+          fi
+
+          echo "Coverage check passed!"
+
+      - name: Upload Coverage Report Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: CoverageReport
 
   frontend-build:
     runs-on: ubuntu-latest

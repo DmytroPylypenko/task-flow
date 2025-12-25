@@ -18,7 +18,7 @@ public class UserRepositoryTests
         _context = DbContextFactory.Create();
         _sut = new UserRepository(_context);
     }
-    
+
     [Fact]
     public async Task AddUserAsync_ShouldAddUserToDatabase()
     {
@@ -32,10 +32,10 @@ public class UserRepositoryTests
 
         // Act
         await _sut.AddUserAsync(user);
-        
+
         // Assert
         var insertedUser = await _context.Users.FindAsync(user.Id);
-        
+
         insertedUser.Should().NotBeNull();
         insertedUser.Should().BeEquivalentTo(user);
     }
@@ -47,7 +47,7 @@ public class UserRepositoryTests
         var email = "test@example.com";
         await _context.Users.AddAsync(new User { Email = email });
         await _context.SaveChangesAsync();
-        
+
         // Act
         var result = await _sut.UserExistsAsync(email);
 
@@ -60,14 +60,14 @@ public class UserRepositoryTests
     {
         // Arrange
         var email = "test@example.com";
-        
+
         // Act
         var result = await _sut.UserExistsAsync(email);
 
         // Assert
         result.Should().BeFalse();
     }
-    
+
     [Fact]
     public async Task UserExistsAsync_ShouldBeCaseInsensitive()
     {
@@ -81,7 +81,7 @@ public class UserRepositoryTests
         // Assert
         result.Should().BeTrue();
     }
-    
+
     [Fact]
     public async Task FindUserByEmailAsync_WhenUserExists_ShouldReturnUser()
     {
