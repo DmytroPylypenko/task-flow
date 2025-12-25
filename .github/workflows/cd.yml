@@ -3,9 +3,12 @@ name: CD Pipeline
 on:
   push:
     branches: [ main ]
+    tags: [ 'v*.*.*' ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
-  deploy:
+  build-and-push:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -18,22 +21,39 @@ jobs:
           username: ${{ secrets.ACR_USERNAME }}
           password: ${{ secrets.ACR_PASSWORD }}
 
-      # Build and Push API
-      - name: Build & Push API
-        run: |
-          docker build \
-            --build-arg DOTNET_ENVIRONMENT=Production \
-            -t ${{ secrets.ACR_LOGIN_SERVER }}/taskflow-api:latest \
-            -t ${{ secrets.ACR_LOGIN_SERVER }}/taskflow-api:${{ github.sha }} \
-            -f TaskFlow.Api/Dockerfile .
-          docker push ${{ secrets.ACR_LOGIN_SERVER }}/taskflow-api --all-tags
+      # Automatically calculate tags for both images
+      - name: Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            ${{ secrets.ACR_LOGIN_SERVER }}/taskflow-api
+            ${{ secrets.ACR_LOGIN_SERVER }}/taskflow-web
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=sha,format=long
+            type=semver,pattern={{version}}
 
-      # Build and Push Web
+      - name: Build & Push API
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: TaskFlow.Api/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          build-args: |
+            DOTNET_ENVIRONMENT=Production
+
       - name: Build & Push Web
-        run: |
-          docker build \
-            --build-arg API_BASE_URL=${{ secrets.API_BASE_URL_PROD }} \
-            -t ${{ secrets.ACR_LOGIN_SERVER }}/taskflow-web:latest \
-            -t ${{ secrets.ACR_LOGIN_SERVER }}/taskflow-web:${{ github.sha }} \
-            -f TaskFlow.Web/Dockerfile TaskFlow.Web
-          docker push ${{ secrets.ACR_LOGIN_SERVER }}/taskflow-web --all-tags
+        uses: docker/build-push-action@v5
+        with:
+          context: TaskFlow.Web
+          file: TaskFlow.Web/Dockerfile
+          push: true
+          # Note: We filter metadata tags to apply only to the web image here manually 
+          # or use two separate 'meta' steps for cleaner separation.
+          tags: |
+            ${{ secrets.ACR_LOGIN_SERVER }}/taskflow-web:latest
+            ${{ secrets.ACR_LOGIN_SERVER }}/taskflow-web:${{ github.sha }}
+          build-args: |
+            API_BASE_URL=${{ secrets.API_BASE_URL_PROD }}
